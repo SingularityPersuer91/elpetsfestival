@@ -1,0 +1,7 @@
+# fuentes pesadas y temporales: nunca al sitio publicado
+_fuentes/
+_capturas/
+*.psd
+*.tmp
+.DS_Store
+Thumbs.db

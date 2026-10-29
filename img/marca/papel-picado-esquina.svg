@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <!-- Textura I3 del manual (papel picado): flores caladas en menta, mostaza, canela y crema, solo para esquinas. Tokens exactos de la paleta Canelazo. -->
+  <defs>
+    <g id="flor">
+      <circle cx="0" cy="0" r="14"/>
+      <g>
+        <ellipse cx="0" cy="-34" rx="13" ry="22"/>
+        <ellipse cx="0" cy="34" rx="13" ry="22"/>
+        <ellipse cx="-34" cy="0" rx="22" ry="13"/>
+        <ellipse cx="34" cy="0" rx="22" ry="13"/>
+        <ellipse cx="-24" cy="-24" rx="13" ry="20" transform="rotate(-45 -24 -24)"/>
+        <ellipse cx="24" cy="24" rx="13" ry="20" transform="rotate(-45 24 24)"/>
+        <ellipse cx="24" cy="-24" rx="13" ry="20" transform="rotate(45 24 -24)"/>
+        <ellipse cx="-24" cy="24" rx="13" ry="20" transform="rotate(45 -24 24)"/>
+      </g>
+    </g>
+    <g id="florcal">
+      <use href="#flor"/>
+      <circle cx="0" cy="0" r="6" fill="#FFF4E0"/>
+      <circle cx="0" cy="-34" r="5" fill="#FFF4E0"/><circle cx="0" cy="34" r="5" fill="#FFF4E0"/>
+      <circle cx="-34" cy="0" r="5" fill="#FFF4E0"/><circle cx="34" cy="0" r="5" fill="#FFF4E0"/>
+    </g>
+  </defs>
+  <g opacity="0.96">
+    <use href="#florcal" x="60" y="60" fill="#3DBE93" transform="rotate(12 60 60)"/>
+    <use href="#florcal" x="170" y="40" fill="#F2B33D" transform="scale(0.8) rotate(-20 212 50)"/>
+    <use href="#florcal" x="48" y="178" fill="#B4472A" transform="scale(0.85) rotate(30 56 209)"/>
+    <use href="#florcal" x="150" y="150" fill="#F2B33D" transform="scale(0.6) rotate(5 250 250)"/>
+    <use href="#florcal" x="250" y="90" fill="#3DBE93" transform="scale(0.5) rotate(40 500 180)"/>
+    <use href="#florcal" x="90" y="270" fill="#F2B33D" transform="scale(0.5) rotate(-30 180 540)"/>
+  </g>
+</svg>
