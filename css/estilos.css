@@ -465,9 +465,79 @@ details > p { margin: 0; padding: 0 0 var(--e5); max-width: 60ch; }
 
 /* ---------- movimiento: solo la cartela del héroe y la primera aparición de cada imagen ---------- */
 .js-mov .foto:not(.heroe__foto) img, .js-mov .mapa img { opacity: 0; transform: translateY(8px); transition: opacity 240ms var(--curva), transform 240ms var(--curva); }
-.js-mov .visible img { opacity: 1; transform: none; }
+.js-mov .visible img, .js-mov .foto.visible:not(.heroe__foto) img { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .js-mov .foto img, .js-mov .mapa img { opacity: 1; transform: none; }
 }
+
+/* ---------- R5: tres páginas (entradas, carpas, festival canino) ---------- */
+.paginas { display: flex; align-items: stretch; margin-left: auto; }
+.paginas a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 9px; font: 600 .875rem/1.15 var(--texto); text-decoration: none; color: var(--carbon); border-bottom: 3px solid transparent; }
+.paginas a:hover { color: var(--canela-oscura); }
+.paginas a[aria-current="page"] { border-bottom-color: var(--canela); font-weight: 700; }
+.paginas .largo { display: none; }
+.barra .boton--chico { display: none; }
+.barra__nombre { display: none; }
+@media (min-width: 600px) { .paginas .largo { display: inline; } .paginas .corto { display: none; } .paginas a { padding: 0 14px; font-size: .9375rem; } }
+@media (min-width: 900px) { .barra .boton--chico { display: inline-flex; margin-left: var(--e5); } }
+@media (min-width: 1100px) { .barra__nombre { display: block; } }
+
+.portada__evento { font: 700 .8125rem/1.3 var(--texto); letter-spacing: .08em; text-transform: uppercase; margin: 0 0 var(--e3); }
+.portada__bajada { font: 600 var(--t-lead)/1.4 var(--texto); margin: 0 0 var(--e5); max-width: 34ch; }
+
+.portada { position: relative; padding-bottom: var(--e6); }
+.portada__foto img { width: 100%; height: min(34vh, 90vw); min-height: 190px; object-fit: cover; object-position: 50% 45%; border-radius: 0; }
+.portada__foto .foto__pie { padding: 6px var(--margen) 0; border-top: 0; }
+.portada__cartela { position: relative; z-index: 2; margin: var(--e2) calc(var(--margen) - 12px) 0; padding: var(--e5) 12px; }
+.portada h1 { margin: 0 0 var(--e3); }
+@media (min-width: 900px) {
+  .portada { display: grid; padding-bottom: var(--e8);
+    grid-template-columns: [full-start] max(var(--margen), (100% - var(--ancho)) / 2) [c1] repeat(12, minmax(0, 1fr)) [c-end] max(var(--margen), (100% - var(--ancho)) / 2) [full-end]; }
+  .portada__foto { grid-column: 8 / full-end; grid-row: 1; }
+  .portada__foto img { height: auto; aspect-ratio: 4 / 5; max-height: min(78vh, 760px); min-height: 0; }
+  .portada__foto .foto__pie { padding: 8px var(--margen) 0 0; justify-content: flex-end; gap: 0 var(--e5); }
+  .portada__cartela { grid-column: c1 / 9; grid-row: 1; align-self: center; margin: var(--e6) 0 0; padding: var(--e7) var(--e7) var(--e6); }
+}
+
+.pista .bloque__nota { margin: var(--e4) 0 0; max-width: 60ch; }
+@media (min-width: 900px) {
+  .pista .pista__cabeza { grid-column: 1 / span 4; grid-row: 1; }
+  .pista .menu { grid-column: 6 / span 7; grid-row: 1 / span 2; margin-top: 0; }
+  .pista .bloque__nota { grid-column: 6 / span 7; grid-row: 3; }
+}
+
+.mapa-equipo { margin: var(--e5) calc(-1 * var(--margen)) 0; }
+.mapa-equipo__abrir { display: block; }
+.mapa-equipo img { display: block; width: 100%; height: auto; border-radius: 0; }
+.mapa-equipo .foto__pie { padding-inline: var(--margen); border-top: 0; }
+.mapa-sec__texto { margin-top: var(--e5); }
+.leyenda { list-style: none; padding: 0; margin: 0 0 var(--e4); border-top: 1px solid var(--filete); }
+.leyenda li { padding: var(--e3) 0; border-bottom: 1px solid var(--filete); max-width: 52ch; }
+.mapa-sec__texto .nota { margin: 0 0 var(--e2); }
+@media (min-width: 900px) {
+  .mapa-sec__cabeza { grid-column: 1 / span 5; grid-row: 1; }
+  .mapa-equipo { grid-column: 7 / span 6; grid-row: 1 / span 2; margin: 0; }
+  .mapa-equipo img { border-radius: 2px; }
+  .mapa-equipo .foto__pie { padding-inline: 0; border-top: 1px solid var(--filete); }
+  .mapa-sec__texto { grid-column: 1 / span 5; grid-row: 2; align-self: start; }
+}
+
+.otras { border-top: 1px solid var(--filete); }
+.otras__in { display: grid; gap: var(--e4); width: min(100% - 2 * var(--margen), var(--ancho)); margin-inline: auto; }
+.otra { position: relative; display: grid; gap: var(--e2); padding: var(--e5) 56px var(--e5) var(--e5); border: 1px solid var(--carbon); text-decoration: none; color: var(--carbon); transition: background-color 160ms var(--curva), color 160ms var(--curva); }
+.otra:hover { background: var(--carbon); color: var(--crema); }
+.otra .indice { margin: 0; }
+.otra__titulo { font: 800 clamp(1.5rem, 1.2rem + 1vw, 2rem)/1.05 var(--titulo); font-variation-settings: "opsz" 48, "wdth" 100; letter-spacing: -.02em; }
+.otra__texto { font-size: 1rem; line-height: 1.4; }
+.otra__flecha { position: absolute; right: var(--e5); top: 50%; width: 22px; height: 22px; transform: translateY(-50%); }
+@media (min-width: 720px) { .otras__in { grid-template-columns: 1fr 1fr; } }
+
+.pie__paginas { list-style: none; padding: 0; margin: var(--e3) 0; display: flex; flex-wrap: wrap; gap: var(--e2) var(--e5); }
+.pase .pase__aviso { color: var(--crema); margin: var(--e3) 0 0; }
+.lista__form select:invalid, .lista__form select { color: var(--carbon); }
+@media (max-width: 599px) and (min-height: 701px) { .pagina-entrada .heroe__foto img { height: min(36vh, 100vw); } }
+.pagina-canino .perro { padding-top: var(--sec); }
+@media (min-width: 900px) { .pagina-canino .perro__texto { grid-column: 1 / span 8; } }
+@media (min-width: 900px) { .mapa-sec .reticula { grid-template-rows: auto 1fr; } }

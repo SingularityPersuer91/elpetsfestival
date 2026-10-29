@@ -1,9 +1,7 @@
-/* El Pets Festival · landing · comportamiento (sin dependencias).
-   1) Botones que preseleccionan el interés de la lista y cambian el texto del envío. 2) Lista de interés hacia el Google Form
-   del organizador, con validación tolerante y errores junto a cada campo. 3) Pase «Nos vemos aquí» en canvas: nace cerca de
-   su sección (o al tocar el formulario), dibuja la vista previa a su tamaño visible y exporta 1080×1920 solo al descargar o
-   compartir; la foto se procesa en el teléfono. 4) Video detrás de un toque. 5) Tira de fechas según el día en Quito.
-   6) Entradas suaves (respetan «reducir movimiento»). */
+/* El Pets Festival · tres páginas (entradas, carpas, festival canino) · comportamiento (sin dependencias).
+   1-2) Una lista de interés por página, con validación tolerante y errores junto a cada campo. 3) Pase «Nos vemos aquí»
+   en canvas (página canina): la foto se procesa en el teléfono. 4) Video detrás de un toque. 5) Tira de fechas según el
+   día en Quito. 6) Entradas suaves (respetan «reducir movimiento»). */
 (function () {
   "use strict";
   var C = window.PETS_CONFIG || {};
@@ -12,77 +10,60 @@
   var URL_PUBLICA = C.URL_PUBLICA || "https://singularitypersuer91.github.io/elpetsfestival/";
   var URL_CORTA = URL_PUBLICA.replace(/^https?:\/\//, "").replace(/\/$/, "");
 
-  /* 1) interés preseleccionado y texto del botón de envío */
-  var form = $("#form-lista"), estado = $("#estado"), enviar = $("#enviar"), E = C.ENTRADAS || {};
-  var TEXTO_ENVIO = { "Entrada": "Sumarme a la lista", "Carpa para vender": "Pedir las condiciones de carpa", "Auspicio para mi marca": "Pedir información de auspicio" };
-  var textoEnvio = function () {
-    var r = $('#form-lista input[name="interes"]:checked');
-    if (enviar && r) enviar.textContent = TEXTO_ENVIO[r.value] || TEXTO_ENVIO.Entrada;
-  };
-  $$("[data-interes]").forEach(function (a) {
-    a.addEventListener("click", function () {
-      var v = a.getAttribute("data-interes");
-      var r = $('#form-lista [data-campo="interes"] input[value="' + v + '"]');
-      if (r) { r.checked = true; textoEnvio(); }
-    });
-  });
-  $$('#form-lista input[name="interes"]').forEach(function (r) { r.addEventListener("change", textoEnvio); });
-
-  /* opciones opcionales: se pueden volver a dejar sin respuesta */
-  var limpiar = $("#limpiar-opcionales");
-  var opcionales = $$('#form-lista input[name="dia_lista"], #form-lista input[name="perro_lista"]');
-  var verLimpiar = function () { if (limpiar) limpiar.hidden = !opcionales.some(function (r) { return r.checked; }); };
-  opcionales.forEach(function (r) { r.addEventListener("change", verLimpiar); });
-  if (limpiar) limpiar.addEventListener("click", function () {
-    opcionales.forEach(function (r) { r.checked = false; }); verLimpiar();
-    var primero = $('#form-lista input[name="dia_lista"]'); if (primero) primero.focus();
-  });
-
-  /* 2) lista de interés: action y name desde config.js; sin todos los identificadores obligatorios no se envía */
-  var listo = !!(C.FORM_ACTION && E.nombre && E.contacto && E.interes && E.acepto);
-  var campo = function (k) { return $$('#form-lista [data-campo="' + k + '"]').reduce(function (a, el) { return a.concat(el.tagName === "FIELDSET" ? $$("input", el) : [el]); }, []); };
-  var aviso = $("#aviso-conexion");
-  if (form && !listo) { enviar.disabled = true; }
-  if (form && listo) {
-    form.action = C.FORM_ACTION;
-    ["nombre", "contacto", "interes", "dia", "perro", "acepto"].forEach(function (k) { if (E[k]) campo(k).forEach(function (el) { el.name = E[k]; }); });
-    campo("acepto").forEach(function (el) { el.value = C.ACEPTO_VALOR || "Acepto"; });
-    enviar.disabled = false; if (aviso) aviso.hidden = true;
-    enviar.setAttribute("aria-describedby", "estado");
-  }
+  /* 1-2) listas de interés: una por página (entrada, carpa, canino). Dirección del formulario e identificadores
+     entry.N por lista en config.js; sin ellos el botón queda deshabilitado y no se envía nada. */
   var esCorreo = function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); };
   var esCelular = function (v) { var d = v.replace(/[\s().-]/g, ""); return /^\+?[0-9]{9,15}$/.test(d); };
   var marcar = function (el, msg) {
-    var err = $("#" + el.id + "-error"); if (!err) return;
+    var err = document.getElementById(el.id + "-error"); if (!err) return;
     if (msg) { el.setAttribute("aria-invalid", "true"); err.textContent = msg; err.hidden = false; }
     else { el.removeAttribute("aria-invalid"); err.textContent = ""; err.hidden = true; }
   };
-  var validar = function () {
-    var fN = $("#nombre"), fC = $("#contacto"), fA = $("#acepto"), primero = null;
-    var n = fN.value.trim(), c = fC.value.trim();
-    marcar(fN, n ? "" : "Escribe tu nombre."); if (!n) primero = primero || fN;
-    var mc = !c ? "Escribe tu WhatsApp o tu correo." : (esCorreo(c) || esCelular(c) ? "" : "Revisa el dato: un celular de 10 dígitos que empiece con 09, o un correo como tu@correo.com.");
-    marcar(fC, mc); if (mc) primero = primero || fC;
-    marcar(fA, fA.checked ? "" : "Para anotarte, marca la casilla de autorización."); if (!fA.checked) primero = primero || fA;
-    return primero;
-  };
-  if (form) {
-    ["nombre", "contacto"].forEach(function (id) { var el = $("#" + id); el.addEventListener("input", function () { if (el.getAttribute("aria-invalid")) marcar(el, ""); }); });
-    $("#acepto").addEventListener("change", function () { if ($("#acepto").checked) marcar($("#acepto"), ""); });
+  $$("form[data-lista]").forEach(function (form) {
+    var cfg = (C.LISTAS || {})[form.getAttribute("data-lista")] || {}, E = cfg.ENTRADAS || {};
+    var enviar = $('[type="submit"]', form), estado = $(".estado", form), aviso = $(".aviso", form);
+    var claves = $$("[data-campo]", form).map(function (el) { return el.getAttribute("data-campo"); });
+    var listo = !!cfg.FORM_ACTION && claves.every(function (k) { return !!E[k]; });
+    if (!listo) { enviar.disabled = true; }
+    else {
+      form.action = cfg.FORM_ACTION;
+      $$("[data-campo]", form).forEach(function (el) {
+        var k = el.getAttribute("data-campo");
+        (el.tagName === "FIELDSET" ? $$("input", el) : [el]).forEach(function (i) { i.name = E[k]; });
+      });
+      $$('[data-campo="acepto"]', form).forEach(function (el) { el.value = C.ACEPTO_VALOR || "Acepto"; });
+      enviar.disabled = false; if (aviso) aviso.hidden = true;
+    }
+    var validar = function () {
+      var primero = null;
+      $$("[data-requerido]", form).forEach(function (el) {
+        var msg = "";
+        if (el.tagName === "FIELDSET") { if (!$("input:checked", el)) msg = el.getAttribute("data-mensaje") || "Elige una opción."; }
+        else if (el.type === "checkbox") { if (!el.checked) msg = "Para anotarte, marca la casilla de autorización."; }
+        else {
+          var v = el.value.trim();
+          if (!v) msg = el.getAttribute("data-mensaje") || "Completa este dato.";
+          else if (el.hasAttribute("data-contacto") && !(esCorreo(v) || esCelular(v))) msg = "Revisa el dato: un celular de 10 dígitos que empiece con 09, o un correo como tu@correo.com.";
+        }
+        marcar(el, msg); if (msg && !primero) primero = el.tagName === "FIELDSET" ? $("input", el) : el;
+      });
+      return primero;
+    };
+    $$("[data-requerido]", form).forEach(function (el) {
+      el.addEventListener(el.tagName === "INPUT" && el.type === "text" ? "input" : "change", function () { if (el.getAttribute("aria-invalid")) marcar(el, ""); });
+    });
     form.addEventListener("submit", function (ev) {
       ev.preventDefault();
       if (!listo) return;
       var malo = validar();
       if (malo) { estado.textContent = "Revisa los campos marcados."; malo.focus(); return; }
-      var datos = new FormData(form);
-      ["dia_lista", "perro_lista"].forEach(function (k) { datos.delete(k); });
       enviar.disabled = true; estado.textContent = "Enviando…";
       /* Pendiente al conectar: el receptor debe confirmar el registro (no-cors no permite leer la respuesta). */
-      fetch(C.FORM_ACTION, { method: "POST", mode: "no-cors", body: datos })
+      fetch(cfg.FORM_ACTION, { method: "POST", mode: "no-cors", body: new FormData(form) })
         .then(function () { window.location.href = "gracias.html"; })
         .catch(function () { enviar.disabled = false; estado.textContent = "No se pudo enviar. Revisa tu conexión e inténtalo otra vez."; });
     });
-  }
+  });
 
   /* 3) pase «Nos vemos aquí» */
   var lienzo = $("#lienzo"), fp = $("#form-pase"), vista = $("#pase-vista");
