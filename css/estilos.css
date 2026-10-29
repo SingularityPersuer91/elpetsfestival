@@ -1,4 +1,7 @@
-/* El Pets Festival Gastronómico · La Yapa de Quito · estilos */
+/* El Pets Festival Gastronómico · La Yapa de Quito · landing (HUECA-WEB-001) · dirección R3 «La mesa sobre la pista», pulida en R4
+   Fuente de verdad: 23_LANDING/04_thinktank_visual/ACTA_R3.md y 06_auditoria_r4/ACTA_R4.md. Paleta solo con tokens del manual y mezclas por opacidad de esos tokens.
+   Pares de texto (lista blanca del manual): carbón/crema 15,7 · crema/canela 5,0 · carbón/mostaza 9,2 · mostaza/carbón 9,2 · crema/carbón 15,7 · canela oscuro/crema 6,3 · carbón/menta 7,3.
+   Nunca mostaza ni menta como texto sobre crema, ni crema sobre mostaza o menta. Menta solo gráfica (un único sello: «Adopción»). */
 
 @font-face { font-family: "Bricolage Grotesque"; src: url("../fonts/bricolage-var.woff2") format("woff2"); font-weight: 800; font-stretch: 75% 100%; font-style: normal; font-display: swap; }
 @font-face { font-family: "Figtree"; src: url("../fonts/figtree-var.woff2") format("woff2"); font-weight: 300 900; font-style: normal; font-display: swap; }
@@ -464,12 +467,12 @@ details > p { margin: 0; padding: 0 0 var(--e5); max-width: 60ch; }
 .pagina h2 { font: 700 var(--t-h3)/1.2 var(--texto); letter-spacing: -.01em; margin: var(--e6) 0 var(--e2); max-width: none; }
 
 /* ---------- movimiento: solo la cartela del héroe y la primera aparición de cada imagen ---------- */
-.js-mov .foto:not(.heroe__foto) img, .js-mov .mapa img { opacity: 0; transform: translateY(8px); transition: opacity 240ms var(--curva), transform 240ms var(--curva); }
-.js-mov .visible img, .js-mov .foto.visible:not(.heroe__foto) img { opacity: 1; transform: none; }
+/* la imagen nunca arranca oculta: si el observador no corre (navegador, caché, extensión), se ve igual */
+@keyframes aparecer { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.js-mov .foto.visible:not(.heroe__foto) img, .js-mov .mapa.visible img { animation: aparecer 240ms var(--curva) both; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
-  .js-mov .foto img, .js-mov .mapa img { opacity: 1; transform: none; }
 }
 
 /* ---------- R5: tres páginas (entradas, carpas, festival canino) ---------- */
