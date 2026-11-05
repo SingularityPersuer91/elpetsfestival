@@ -2,7 +2,8 @@
    Sin aceptación no se pide nada a Meta. La decisión queda en este navegador. */
 (function () {
   "use strict";
-  var PIXEL_ID = "29163532359953133";
+  var etiqueta = document.currentScript;
+  var PIXEL_ID = (etiqueta && etiqueta.getAttribute("data-pixel")) || "29163532359953133";
   var CLAVE = "pf_cookies_v1";
 
   function leer() {
