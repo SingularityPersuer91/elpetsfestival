@@ -10,5 +10,5 @@ window.PETS_CONFIG = {
     canino: { FORM_ACTION: "", ENTRADAS: { origen: "", nombre: "", contacto: "", momento: "", perro: "", raza: "", acepto: "" } }
   },
   ACEPTO_VALOR: "Acepto",
-  URL_PUBLICA: "https://singularitypersuer91.github.io/elpetsfestival/"
+  URL_PUBLICA: "https://elpetsfestivalquito.com/"
 };

@@ -7,7 +7,7 @@
   var C = window.PETS_CONFIG || {};
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
-  var URL_PUBLICA = C.URL_PUBLICA || "https://singularitypersuer91.github.io/elpetsfestival/";
+  var URL_PUBLICA = C.URL_PUBLICA || "https://elpetsfestivalquito.com/";
   var URL_CORTA = URL_PUBLICA.replace(/^https?:\/\//, "").replace(/\/$/, "");
 
   /* 1-2) listas de interés: una por página (entrada, carpa, canino). Dirección del formulario e identificadores

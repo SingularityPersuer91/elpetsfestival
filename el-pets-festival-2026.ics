@@ -10,7 +10,7 @@ DTSTART:20261212T140000Z
 DTEND:20261213T020000Z
 SUMMARY:El Pets Festival Gastronómico · sábado
 LOCATION:Parque Bicentenario\, espacio exterior del Centro de Convenciones Metropolitano\, Quito
-DESCRIPTION:La Yapa de Quito. De 09:00 a 21:00. Entrada USD 5 + servicio. https://singularitypersuer91.github.io/elpetsfestival/
+DESCRIPTION:La Yapa de Quito. De 09:00 a 21:00. Entrada USD 5 + servicio. https://elpetsfestivalquito.com/
 END:VEVENT
 BEGIN:VEVENT
 UID:elpetsfestival-2026-12-13@elpetsfestival
@@ -19,6 +19,6 @@ DTSTART:20261213T140000Z
 DTEND:20261214T020000Z
 SUMMARY:El Pets Festival Gastronómico · domingo
 LOCATION:Parque Bicentenario\, espacio exterior del Centro de Convenciones Metropolitano\, Quito
-DESCRIPTION:La Yapa de Quito. De 09:00 a 21:00. Entrada USD 5 + servicio. https://singularitypersuer91.github.io/elpetsfestival/
+DESCRIPTION:La Yapa de Quito. De 09:00 a 21:00. Entrada USD 5 + servicio. https://elpetsfestivalquito.com/
 END:VEVENT
 END:VCALENDAR
