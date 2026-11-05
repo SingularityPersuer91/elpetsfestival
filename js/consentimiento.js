@@ -28,12 +28,73 @@
     window.fbq("track", "PageView");
   }
 
-  /* Cada botón de WhatsApp cuenta como Contactar, con la página de origen. */
+  /* Medición de botones. Nunca se envía lo que la persona escribe ni su foto:
+     solo qué botón tocó, en qué zona y en qué página.
+     WhatsApp = Contact (estándar) + un evento por tema.
+     Otros: ClicRedes, ClicCalendario, ClicMapa, ClicVideo, ClicPregunta,
+     ClicNavegacion, PaseDescargar, PaseCompartir, PaseFoto y ClicBoton. */
+  function texto(el) {
+    return (el.getAttribute("aria-label") || el.textContent || "").replace(/\s+/g, " ").trim().slice(0, 60);
+  }
+  function zona(el) {
+    if (el.closest(".wa-flotante")) return "flotante";
+    if (el.closest(".barra")) return "barra";
+    if (el.closest("footer")) return "pie";
+    if (el.closest(".otras")) return "otras";
+    var s = el.closest("section[id]");
+    return s ? s.id : "pagina";
+  }
+  function temaWhatsApp(href) {
+    var t = "";
+    try { t = decodeURIComponent(href); } catch (e) { t = href; }
+    if (/avisen/.test(t)) return "Entrada";
+    if (/condiciones/.test(t)) return "Carpa";
+    if (/bases/.test(t)) return "Canino";
+    return "Pregunta";
+  }
+  function medir(el) {
+    var datos = { boton: texto(el), zona: zona(el), pagina: location.pathname };
+    if (el.tagName === "SUMMARY") {
+      if (!el.parentNode.open) window.fbq("trackCustom", "ClicPregunta", datos);
+      return;
+    }
+    if (el.tagName === "BUTTON") {
+      var id = el.id;
+      var nombre = id === "abrir-video" ? "ClicVideo" : id === "descargar" ? "PaseDescargar" : id === "compartir" ? "PaseCompartir" : "ClicBoton";
+      window.fbq("trackCustom", nombre, datos);
+      return;
+    }
+    var href = el.href || "";
+    if (href.indexOf("wa.me/") > -1) {
+      var tema = temaWhatsApp(href);
+      datos.content_name = tema;
+      window.fbq("track", "Contact", datos);
+      window.fbq("trackCustom", "WhatsApp" + tema, datos);
+    } else if (/(facebook|instagram)\.com/.test(href)) {
+      if (href.indexOf("/privacy/") > -1) return;
+      datos.red = href.indexOf("instagram") > -1 ? "Instagram" : "Facebook";
+      window.fbq("trackCustom", "ClicRedes", datos);
+    } else if (/\.ics(\?|$)/.test(href)) {
+      window.fbq("trackCustom", "ClicCalendario", datos);
+    } else if (href.indexOf("/img/mapa/") > -1) {
+      window.fbq("trackCustom", "ClicMapa", datos);
+    } else {
+      datos.destino = el.pathname + el.hash;
+      window.fbq("trackCustom", "ClicNavegacion", datos);
+    }
+  }
   document.addEventListener("click", function (e) {
     if (!cargado || !window.fbq || !e.target.closest) return;
-    var a = e.target.closest('a[href*="wa.me/"]');
-    if (a) window.fbq("track", "Contact", { content_name: location.pathname });
+    var el = e.target.closest("a[href], button, summary");
+    if (!el || el.disabled) return;
+    if (el.closest("#aviso-cookies") || el.id === "cambiar-cookies" || el.classList.contains("saltar")) return;
+    medir(el);
   }, true);
+  document.addEventListener("change", function (e) {
+    if (cargado && window.fbq && e.target.id === "foto" && e.target.files && e.target.files.length) {
+      window.fbq("trackCustom", "PaseFoto", { pagina: location.pathname }); /* solo el aviso: la foto no sale del teléfono */
+    }
+  });
 
   function ajustarAlto(aviso) {
     var alto = aviso ? aviso.offsetHeight + 12 : 0;
