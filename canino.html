@@ -31,7 +31,7 @@
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="site.webmanifest">
-<link rel="stylesheet" href="css/estilos.css?v=r51b">
+<link rel="stylesheet" href="css/estilos.css?v=r60">
 <script type="application/ld+json">
 {
  "@context": "https://schema.org",
@@ -81,7 +81,7 @@
    <a href="carpas.html"><span class="corto">Carpas</span><span class="largo">Carpas</span></a>
    <a href="canino.html" aria-current="page"><span class="corto">Canino</span><span class="largo">Festival canino</span></a>
   </nav>
-  <a class="boton boton--chico" href="#lista">Quiero participar</a>
+  <a class="boton boton--chico" href="https://wa.me/593996876304?text=Hola%2C%20quiero%20recibir%20las%20bases%20del%20festival%20canino%20de%20El%20Pets%20Festival.%20Mi%20nombre%20es%3A%20.%20Quiero%20participar%20en%3A%20.%20Mi%20perro%20se%20llama%3A%20." target="_blank" rel="noopener">Quiero participar</a>
  </div>
 </header>
 
@@ -101,7 +101,7 @@
   <h1 id="titulo">El festival canino</h1>
   <p class="portada__bajada">Cuatro momentos, un solo festival: de la pasarela de rescatados a las exhibiciones de bully.</p>
   <div class="heroe__acciones">
-   <a class="boton" href="#lista">Quiero participar <svg class="boton__flecha" aria-hidden="true" focusable="false"><use href="#i-flecha"/></svg></a>
+   <a class="boton" href="https://wa.me/593996876304?text=Hola%2C%20quiero%20recibir%20las%20bases%20del%20festival%20canino%20de%20El%20Pets%20Festival.%20Mi%20nombre%20es%3A%20.%20Quiero%20participar%20en%3A%20.%20Mi%20perro%20se%20llama%3A%20." target="_blank" rel="noopener">Quiero participar <svg class="boton__flecha" aria-hidden="true" focusable="false"><use href="#i-flecha"/></svg></a>
    <p class="heroe__lista">Recibe las bases cuando se publiquen. Anotarte no es inscribirte.</p>
   </div>
   <dl class="datos">
@@ -134,53 +134,10 @@
   <header class="lista__cabeza">
    <p class="indice">Participa</p>
    <h2 id="t-lista">Recibe las bases para participar</h2>
-   <p class="intro">Te escribimos cuando se publiquen las bases, los horarios y los cupos de cada momento. Anotarte no es inscribirte.</p>
+   <p class="intro">Escríbenos por WhatsApp y te enviamos las bases, los horarios y los cupos de cada momento cuando se publiquen. Anotarte no es inscribirte.</p>
    <p class="lista__privacidad"><a class="enlace" href="privacidad.html">Cómo cuidamos tus datos</a></p>
   </header>
-  <form class="lista__form cartela" id="form-canino" data-lista="canino" method="post" novalidate>
-   <p class="aviso"><strong>Este formulario todavía no está conectado.</strong> Puedes verlo, pero aún no envía datos.</p>
-   <input type="hidden" data-campo="origen" name="origen" value="Canino">
-   <div class="grupo">
-    <div class="campo">
-     <div class="campo__rotulo"><label for="nombre-canino">Tu nombre</label><span class="obligatorio" aria-hidden="true">Obligatorio</span></div>
-     <input id="nombre-canino" name="nombre" data-campo="nombre" type="text" autocomplete="name" required data-requerido data-mensaje="Escribe tu nombre." aria-describedby="nombre-canino-error">
-     <p class="error" id="nombre-canino-error" hidden></p>
-    </div>
-    <div class="campo">
-     <div class="campo__rotulo"><label for="contacto-canino">WhatsApp o correo</label><span class="obligatorio" aria-hidden="true">Obligatorio</span></div>
-     <input id="contacto-canino" name="contacto" data-campo="contacto" type="text" autocomplete="off" required data-requerido data-mensaje="Escribe tu WhatsApp o tu correo." data-contacto inputmode="text" autocapitalize="off" spellcheck="false" placeholder="099… o tu@correo.com" aria-describedby="contacto-canino-ayuda contacto-canino-error">
-     <p class="ayuda" id="contacto-canino-ayuda">Tu celular (por ejemplo 099…) o tu correo (por ejemplo tu@correo.com).</p>
-     <p class="error" id="contacto-canino-error" hidden></p>
-    </div>
-    <fieldset class="opciones opciones--bloques opciones--dos" id="momento-canino" data-campo="momento" data-requerido data-mensaje="Elige en qué quieres participar." aria-describedby="momento-canino-error">
-     <legend>¿En qué quieres participar? <span class="obligatorio" aria-hidden="true">Obligatorio</span></legend>
-     <label class="opcion"><input type="radio" name="momento" value="Pasarela de rescatados"> <span>Pasarela de rescatados</span></label>
-     <label class="opcion"><input type="radio" name="momento" value="Fun show de raza"> <span>Fun show de raza</span></label>
-     <label class="opcion"><input type="radio" name="momento" value="Exhibición Exotic Bully"> <span>Exhibición Exotic Bully</span></label>
-     <label class="opcion"><input type="radio" name="momento" value="Exhibición American Bully"> <span>Exhibición American Bully</span></label>
-    </fieldset>
-    <p class="error" id="momento-canino-error" hidden></p>
-    <div class="campo">
-     <div class="campo__rotulo"><label for="perro-canino">Nombre de tu perro</label><span class="opcional">(opcional)</span></div>
-     <input id="perro-canino" name="perro" data-campo="perro" type="text" autocomplete="off" aria-describedby="perro-canino-error">
-     <p class="error" id="perro-canino-error" hidden></p>
-    </div>
-    <div class="campo">
-     <div class="campo__rotulo"><label for="raza-canino">Raza o mezcla</label><span class="opcional">(opcional)</span></div>
-     <input id="raza-canino" name="raza" data-campo="raza" type="text" autocomplete="off" aria-describedby="raza-canino-error">
-     <p class="error" id="raza-canino-error" hidden></p>
-    </div>
-   </div>
-   <div class="grupo">
-    <div class="campo__rotulo"><span class="rotulo">Autorización</span><span class="obligatorio" aria-hidden="true">Obligatorio</span></div>
-    <label class="consentimiento"><input type="checkbox" name="acepto" id="acepto-canino" data-campo="acepto" required data-requerido aria-describedby="acepto-canino-error"> <span>Acepto que El Pets Festival use estos datos solo para enviarme las bases del festival canino. Dudas o bajas: Rodrigo Vera, WhatsApp +593&nbsp;99&nbsp;847&nbsp;1381.</span></label>
-    <p class="error" id="acepto-canino-error" hidden></p>
-    <div class="lista__envio">
-     <button class="boton" type="submit" disabled>Recibir las bases</button>
-     <p class="estado" role="status" aria-live="polite"></p>
-    </div>
-   </div>
-  </form>
+  <div class="lista__form cartela wa"><h3 class="wa__titulo">Escríbenos por WhatsApp</h3><p>Se abre un chat con el mensaje listo: completa tu nombre, en qué momento quieres participar y el nombre de tu perro.</p><a class="boton boton--wa" href="https://wa.me/593996876304?text=Hola%2C%20quiero%20recibir%20las%20bases%20del%20festival%20canino%20de%20El%20Pets%20Festival.%20Mi%20nombre%20es%3A%20.%20Quiero%20participar%20en%3A%20.%20Mi%20perro%20se%20llama%3A%20." target="_blank" rel="noopener"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 20 L5.4 16 A8 8 0 1 1 8.4 19 Z M9 9.5 C9 12 11.5 14.5 14 14.5"/></svg>Pedir las bases por WhatsApp</a><p class="wa__numero">WhatsApp +593&nbsp;99&nbsp;687&nbsp;6304</p></div>
  </div>
 </section>
 
@@ -306,7 +263,7 @@
     <li><a class="enlace" href="carpas.html">Carpas para emprendedores</a></li>
     <li><a class="enlace" href="canino.html">Festival canino</a></li>
    </ul>
-   <p class="pie__contacto">Contacto, dudas y bajas: Rodrigo Vera<br><a class="enlace" href="https://wa.me/593998471381">WhatsApp +593&nbsp;99&nbsp;847&nbsp;1381</a></p>
+   <p class="pie__contacto">Contacto, dudas y bajas<br><a class="enlace" href="https://wa.me/593996876304" target="_blank" rel="noopener">WhatsApp +593&nbsp;99&nbsp;687&nbsp;6304</a></p>
   </div>
   <div class="pie__legal">
    <p>Organizan House of Bulls, Barrio Bulls, Media Arp y Draco 593.ec.</p>
@@ -316,7 +273,8 @@
  </div>
 </footer>
 
-<script src="js/config.js?v=r51b"></script>
-<script src="js/app.js?v=r51b" defer></script>
+<script src="js/config.js?v=r60"></script>
+<script src="js/app.js?v=r60" defer></script>
+<a class="wa-flotante" href="https://wa.me/593996876304?text=Hola%2C%20tengo%20una%20pregunta%20sobre%20El%20Pets%20Festival." target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 20 L5.4 16 A8 8 0 1 1 8.4 19 Z M9 9.5 C9 12 11.5 14.5 14 14.5"/></svg><span>WhatsApp</span></a>
 </body>
 </html>

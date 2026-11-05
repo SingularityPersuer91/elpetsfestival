@@ -1,5 +1,5 @@
 /* El Pets Festival · tres páginas (entradas, carpas, festival canino) · comportamiento (sin dependencias).
-   1-2) Una lista de interés por página, con validación tolerante y errores junto a cada campo. 3) Pase «Nos vemos aquí»
+   3) Pase «Nos vemos aquí»
    en canvas (página canina): la foto se procesa en el teléfono. 4) Video detrás de un toque. 5) Tira de fechas según el
    día en Quito. 6) Entradas suaves (respetan «reducir movimiento»). */
 (function () {
@@ -9,61 +9,6 @@
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   var URL_PUBLICA = C.URL_PUBLICA || "https://elpetsfestivalquito.com/";
   var URL_CORTA = URL_PUBLICA.replace(/^https?:\/\//, "").replace(/\/$/, "");
-
-  /* 1-2) listas de interés: una por página (entrada, carpa, canino). Dirección del formulario e identificadores
-     entry.N por lista en config.js; sin ellos el botón queda deshabilitado y no se envía nada. */
-  var esCorreo = function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); };
-  var esCelular = function (v) { var d = v.replace(/[\s().-]/g, ""); return /^\+?[0-9]{9,15}$/.test(d); };
-  var marcar = function (el, msg) {
-    var err = document.getElementById(el.id + "-error"); if (!err) return;
-    if (msg) { el.setAttribute("aria-invalid", "true"); err.textContent = msg; err.hidden = false; }
-    else { el.removeAttribute("aria-invalid"); err.textContent = ""; err.hidden = true; }
-  };
-  $$("form[data-lista]").forEach(function (form) {
-    var cfg = (C.LISTAS || {})[form.getAttribute("data-lista")] || {}, E = cfg.ENTRADAS || {};
-    var enviar = $('[type="submit"]', form), estado = $(".estado", form), aviso = $(".aviso", form);
-    var claves = $$("[data-campo]", form).map(function (el) { return el.getAttribute("data-campo"); });
-    var listo = !!cfg.FORM_ACTION && claves.every(function (k) { return !!E[k]; });
-    if (!listo) { enviar.disabled = true; }
-    else {
-      form.action = cfg.FORM_ACTION;
-      $$("[data-campo]", form).forEach(function (el) {
-        var k = el.getAttribute("data-campo");
-        (el.tagName === "FIELDSET" ? $$("input", el) : [el]).forEach(function (i) { i.name = E[k]; });
-      });
-      $$('[data-campo="acepto"]', form).forEach(function (el) { el.value = C.ACEPTO_VALOR || "Acepto"; });
-      enviar.disabled = false; if (aviso) aviso.hidden = true;
-    }
-    var validar = function () {
-      var primero = null;
-      $$("[data-requerido]", form).forEach(function (el) {
-        var msg = "";
-        if (el.tagName === "FIELDSET") { if (!$("input:checked", el)) msg = el.getAttribute("data-mensaje") || "Elige una opción."; }
-        else if (el.type === "checkbox") { if (!el.checked) msg = "Para anotarte, marca la casilla de autorización."; }
-        else {
-          var v = el.value.trim();
-          if (!v) msg = el.getAttribute("data-mensaje") || "Completa este dato.";
-          else if (el.hasAttribute("data-contacto") && !(esCorreo(v) || esCelular(v))) msg = "Revisa el dato: un celular de 10 dígitos que empiece con 09, o un correo como tu@correo.com.";
-        }
-        marcar(el, msg); if (msg && !primero) primero = el.tagName === "FIELDSET" ? $("input", el) : el;
-      });
-      return primero;
-    };
-    $$("[data-requerido]", form).forEach(function (el) {
-      el.addEventListener(el.tagName === "INPUT" && el.type === "text" ? "input" : "change", function () { if (el.getAttribute("aria-invalid")) marcar(el, ""); });
-    });
-    form.addEventListener("submit", function (ev) {
-      ev.preventDefault();
-      if (!listo) return;
-      var malo = validar();
-      if (malo) { estado.textContent = "Revisa los campos marcados."; malo.focus(); return; }
-      enviar.disabled = true; estado.textContent = "Enviando…";
-      /* Pendiente al conectar: el receptor debe confirmar el registro (no-cors no permite leer la respuesta). */
-      fetch(cfg.FORM_ACTION, { method: "POST", mode: "no-cors", body: new FormData(form) })
-        .then(function () { window.location.href = "gracias.html"; })
-        .catch(function () { enviar.disabled = false; estado.textContent = "No se pudo enviar. Revisa tu conexión e inténtalo otra vez."; });
-    });
-  });
 
   /* 3) pase «Nos vemos aquí» */
   var lienzo = $("#lienzo"), fp = $("#form-pase"), vista = $("#pase-vista");

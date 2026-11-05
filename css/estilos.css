@@ -544,3 +544,20 @@ details > p { margin: 0; padding: 0 0 var(--e5); max-width: 60ch; }
 .pagina-canino .perro { padding-top: var(--sec); }
 @media (min-width: 900px) { .pagina-canino .perro__texto { grid-column: 1 / span 8; } }
 @media (min-width: 900px) { .mapa-sec .reticula { grid-template-rows: auto 1fr; } }
+
+/* WhatsApp: tarjeta de contacto y botón flotante (carbón sobre menta, contraste 7,3:1) */
+.wa { align-content: start; gap: var(--e3); }
+.wa p { margin: 0; }
+.wa__titulo { margin: 0; font: 800 clamp(1.5rem, 2.4vw, 2rem)/1.1 var(--titulo); }
+.boton--wa { justify-content: center; gap: 10px; background: var(--menta); color: var(--carbon); border-color: var(--menta); font-weight: 700; margin-top: var(--e2); }
+.boton--wa svg { width: 24px; height: 24px; flex: none; }
+.boton--wa:hover { background: var(--carbon); border-color: var(--carbon); color: var(--crema); }
+.wa__numero { font-size: .9375rem; }
+.wa-flotante { position: fixed; left: max(16px, env(safe-area-inset-left)); bottom: max(16px, env(safe-area-inset-bottom)); z-index: 40;
+  display: inline-flex; align-items: center; gap: 8px; min-height: 56px; padding: 0 20px 0 16px; border-radius: 28px;
+  background: var(--menta); color: var(--carbon); font: 700 1rem/1 var(--texto); text-decoration: none;
+  box-shadow: 0 6px 18px rgba(35, 26, 21, .32); transition: transform 160ms var(--curva), background-color 160ms var(--curva); }
+.wa-flotante svg { width: 28px; height: 28px; flex: none; }
+.wa-flotante:hover { background: var(--carbon); color: var(--crema); transform: translateY(-2px); }
+@media (prefers-reduced-motion: reduce) { .wa-flotante { transition: none; } .wa-flotante:hover { transform: none; } }
+@media print { .wa-flotante { display: none; } }

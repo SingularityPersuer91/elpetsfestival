@@ -33,7 +33,7 @@
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="site.webmanifest">
-<link rel="stylesheet" href="css/estilos.css?v=r51b">
+<link rel="stylesheet" href="css/estilos.css?v=r60">
 <script type="application/ld+json">
 {
  "@context": "https://schema.org",
@@ -214,7 +214,7 @@
    <a href="carpas.html"><span class="corto">Carpas</span><span class="largo">Carpas</span></a>
    <a href="canino.html"><span class="corto">Canino</span><span class="largo">Festival canino</span></a>
   </nav>
-  <a class="boton boton--chico" href="#lista">Quiero mi entrada</a>
+  <a class="boton boton--chico" href="https://wa.me/593996876304?text=Hola%2C%20quiero%20que%20me%20avisen%20cuando%20abra%20la%20venta%20de%20entradas%20de%20El%20Pets%20Festival." target="_blank" rel="noopener">Quiero mi entrada</a>
  </div>
 </header>
 
@@ -239,7 +239,7 @@
   <h1 id="titulo" data-rol="titular" data-invariante="h1"><span>La pista</span> <span>se vuelve</span> <span class="mesa">mesa</span></h1>
   <p class="portada__bajada">Comida quiteña, música en vivo y un festival canino, al aire libre.</p>
   <div class="heroe__acciones">
-   <a class="boton" href="#lista" data-rol="cta">Quiero mi entrada <svg class="boton__flecha" aria-hidden="true" focusable="false"><use href="#i-flecha"/></svg></a>
+   <a class="boton" href="https://wa.me/593996876304?text=Hola%2C%20quiero%20que%20me%20avisen%20cuando%20abra%20la%20venta%20de%20entradas%20de%20El%20Pets%20Festival." target="_blank" rel="noopener" data-rol="cta">Quiero mi entrada <svg class="boton__flecha" aria-hidden="true" focusable="false"><use href="#i-flecha"/></svg></a>
    <p class="heroe__lista"><strong>Lista de interés</strong> · Anotarte no es pagar</p>
   </div>
   <dl class="datos">
@@ -293,7 +293,7 @@
   </div>
   <div class="cartel__pie">
    <p class="nota">Se suman artistas emergentes de Quito; sus nombres están en definición.</p>
-   <a class="boton boton--claro" href="#lista">Quiero mi entrada <svg class="boton__flecha" aria-hidden="true" focusable="false"><use href="#i-flecha"/></svg></a>
+   <a class="boton boton--claro" href="https://wa.me/593996876304?text=Hola%2C%20quiero%20que%20me%20avisen%20cuando%20abra%20la%20venta%20de%20entradas%20de%20El%20Pets%20Festival." target="_blank" rel="noopener">Quiero mi entrada <svg class="boton__flecha" aria-hidden="true" focusable="false"><use href="#i-flecha"/></svg></a>
   </div>
   <figure class="video foto">
    <button class="video__abrir" type="button" id="abrir-video" aria-controls="video-yapa">
@@ -346,41 +346,10 @@
   <header class="lista__cabeza">
    <p class="indice">Lista de interés</p>
    <h2 id="t-lista">Avísame cuando abra la venta</h2>
-   <p class="intro">Te escribimos el día que abra la venta de entradas. Anotarte no es pagar ni reservar.</p>
+   <p class="intro">Escríbenos por WhatsApp y te avisamos el día que abra la venta de entradas. Anotarte no es pagar ni reservar.</p>
    <p class="lista__privacidad"><a class="enlace" href="privacidad.html">Cómo cuidamos tus datos</a></p>
   </header>
-  <form class="lista__form cartela" id="form-entrada" data-lista="entrada" method="post" novalidate>
-   <p class="aviso"><strong>Este formulario todavía no está conectado.</strong> Puedes verlo, pero aún no envía datos.</p>
-   <input type="hidden" data-campo="origen" name="origen" value="Entrada">
-   <div class="grupo">
-    <div class="campo">
-     <div class="campo__rotulo"><label for="nombre-entrada">Nombre</label><span class="obligatorio" aria-hidden="true">Obligatorio</span></div>
-     <input id="nombre-entrada" name="nombre" data-campo="nombre" type="text" autocomplete="name" required data-requerido data-mensaje="Escribe tu nombre." aria-describedby="nombre-entrada-error">
-     <p class="error" id="nombre-entrada-error" hidden></p>
-    </div>
-    <div class="campo">
-     <div class="campo__rotulo"><label for="contacto-entrada">WhatsApp o correo</label><span class="obligatorio" aria-hidden="true">Obligatorio</span></div>
-     <input id="contacto-entrada" name="contacto" data-campo="contacto" type="text" autocomplete="off" required data-requerido data-mensaje="Escribe tu WhatsApp o tu correo." data-contacto inputmode="text" autocapitalize="off" spellcheck="false" placeholder="099… o tu@correo.com" aria-describedby="contacto-entrada-ayuda contacto-entrada-error">
-     <p class="ayuda" id="contacto-entrada-ayuda">Tu celular (por ejemplo 099…) o tu correo (por ejemplo tu@correo.com).</p>
-     <p class="error" id="contacto-entrada-error" hidden></p>
-    </div>
-    <fieldset class="opciones opciones--bloques opciones--tres" id="dia-entrada" data-campo="dia">
-     <legend>¿Qué día piensas ir? <span class="opcional">(opcional)</span></legend>
-     <label class="opcion"><input type="radio" name="dia" value="Sábado 12"> <span>Sábado 12</span></label>
-     <label class="opcion"><input type="radio" name="dia" value="Domingo 13"> <span>Domingo 13</span></label>
-     <label class="opcion"><input type="radio" name="dia" value="Los dos días"> <span>Los dos días</span></label>
-    </fieldset>
-   </div>
-   <div class="grupo">
-    <div class="campo__rotulo"><span class="rotulo">Autorización</span><span class="obligatorio" aria-hidden="true">Obligatorio</span></div>
-    <label class="consentimiento"><input type="checkbox" name="acepto" id="acepto-entrada" data-campo="acepto" required data-requerido aria-describedby="acepto-entrada-error"> <span>Acepto que El Pets Festival use estos datos solo para avisarme cuando abra la venta de entradas. Dudas o bajas: Rodrigo Vera, WhatsApp +593&nbsp;99&nbsp;847&nbsp;1381.</span></label>
-    <p class="error" id="acepto-entrada-error" hidden></p>
-    <div class="lista__envio">
-     <button class="boton" type="submit" disabled>Avísame cuando abra la venta</button>
-     <p class="estado" role="status" aria-live="polite"></p>
-    </div>
-   </div>
-  </form>
+  <div class="lista__form cartela wa"><h3 class="wa__titulo">Anótate por WhatsApp</h3><p>Se abre un chat con el mensaje listo: solo tienes que enviarlo.</p><a class="boton boton--wa" href="https://wa.me/593996876304?text=Hola%2C%20quiero%20que%20me%20avisen%20cuando%20abra%20la%20venta%20de%20entradas%20de%20El%20Pets%20Festival." target="_blank" rel="noopener"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 20 L5.4 16 A8 8 0 1 1 8.4 19 Z M9 9.5 C9 12 11.5 14.5 14 14.5"/></svg>Avísame por WhatsApp</a><p class="wa__numero">WhatsApp +593&nbsp;99&nbsp;687&nbsp;6304</p></div>
  </div>
 </section>
 
@@ -408,7 +377,7 @@
   <div class="preguntas__lista">
   <details><summary>¿Cuándo y dónde es?</summary><p>El sábado 12 y el domingo 13 de diciembre de 2026, de 09:00 a 21:00, en el espacio exterior del Centro de Convenciones Metropolitano, dentro del Parque Bicentenario, en el norte de Quito. El ingreso es por la Plaza del Oso.</p></details>
   <details><summary>¿Cuánto cuesta la entrada?</summary><p>USD 5 más USD 1,12 de servicio de la tiquetera, más IVA. El total se muestra antes de confirmar la compra.</p></details>
-  <details><summary>¿Dónde compro?</summary><p>La venta abre pronto. Si te anotas en la lista, te avisamos el día que abra. Compra solo en los enlaces que publique el festival.</p></details>
+  <details><summary>¿Dónde compro?</summary><p>La venta abre pronto. Escríbenos por WhatsApp y te avisamos el día que abra. Compra solo en los enlaces que publique el festival.</p></details>
   <details><summary>¿La entrada es por día o por los dos días?</summary><p>Cada entrada vale para una persona y un solo ingreso. Si vienes los dos días, necesitas una entrada para cada día.</p></details>
   <details><summary>¿Puedo salir y volver a entrar?</summary><p>No. Cada entrada permite un solo ingreso: si sales, para volver necesitas una entrada nueva.</p></details>
   <details><summary>¿Pagan los niños?</summary><p>Los niños mayores de 2 años pagan entrada. Todos los niños entran con una persona adulta responsable.</p></details>
@@ -461,7 +430,7 @@
     <li><a class="enlace" href="carpas.html">Carpas para emprendedores</a></li>
     <li><a class="enlace" href="canino.html">Festival canino</a></li>
    </ul>
-   <p class="pie__contacto">Contacto, dudas y bajas: Rodrigo Vera<br><a class="enlace" href="https://wa.me/593998471381">WhatsApp +593&nbsp;99&nbsp;847&nbsp;1381</a></p>
+   <p class="pie__contacto">Contacto, dudas y bajas<br><a class="enlace" href="https://wa.me/593996876304" target="_blank" rel="noopener">WhatsApp +593&nbsp;99&nbsp;687&nbsp;6304</a></p>
   </div>
   <div class="pie__legal">
    <p>Organizan House of Bulls, Barrio Bulls, Media Arp y Draco 593.ec.</p>
@@ -471,7 +440,8 @@
  </div>
 </footer>
 
-<script src="js/config.js?v=r51b"></script>
-<script src="js/app.js?v=r51b" defer></script>
+<script src="js/config.js?v=r60"></script>
+<script src="js/app.js?v=r60" defer></script>
+<a class="wa-flotante" href="https://wa.me/593996876304?text=Hola%2C%20tengo%20una%20pregunta%20sobre%20El%20Pets%20Festival." target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 20 L5.4 16 A8 8 0 1 1 8.4 19 Z M9 9.5 C9 12 11.5 14.5 14 14.5"/></svg><span>WhatsApp</span></a>
 </body>
 </html>
