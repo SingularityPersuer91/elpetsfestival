@@ -27,6 +27,49 @@
     }(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
     window.fbq("init", PIXEL_ID);
     window.fbq("track", "PageView");
+    medirLectura();
+  }
+
+  /* Lectura: una sección cuenta si ocupa media pantalla durante 3 segundos. Una vez por sección y por visita.
+     ScrollProfundidad marca cuando se pasa del 50 % y del 90 % de la página. Solo con cookies aceptadas. */
+  function medirLectura() {
+    if (!("IntersectionObserver" in window)) return;
+    var pagina = location.pathname, relojes = {}, vistas = {}, niveles = {};
+    var obs = new IntersectionObserver(function (entradas) {
+      entradas.forEach(function (e) {
+        var id = e.target.id;
+        var dentro = e.isIntersecting && e.intersectionRect.height >= window.innerHeight * 0.5;
+        if (dentro && !vistas[id] && !relojes[id]) {
+          relojes[id] = setTimeout(function () {
+            vistas[id] = true;
+            window.fbq("trackCustom", "SeccionLeida", { seccion: id, pagina: pagina });
+            obs.unobserve(e.target);
+          }, 3000);
+        } else if (!dentro && relojes[id] && !vistas[id]) {
+          clearTimeout(relojes[id]);
+          delete relojes[id];
+        }
+      });
+    }, { threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1] });
+    function observar() {
+      Array.prototype.forEach.call(document.querySelectorAll("main section[id], section[id]"), function (s) {
+        if (s.id !== "aviso-cookies") obs.observe(s);
+      });
+    }
+    function profundidad() {
+      var total = document.documentElement.scrollHeight - window.innerHeight;
+      if (total <= 0) return;
+      var pct = (window.scrollY / total) * 100;
+      [50, 90].forEach(function (n) {
+        if (pct >= n && !niveles[n]) {
+          niveles[n] = true;
+          window.fbq("trackCustom", "ScrollProfundidad", { nivel: n, pagina: pagina });
+        }
+      });
+    }
+    window.addEventListener("scroll", profundidad, { passive: true });
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", observar);
+    else observar();
   }
 
   /* Medición de botones. Nunca se envía lo que la persona escribe ni su foto:
