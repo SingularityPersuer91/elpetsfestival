@@ -34,7 +34,9 @@
      Otros: ClicRedes, ClicCalendario, ClicMapa, ClicVideo, ClicPregunta,
      ClicNavegacion, PaseDescargar, PaseCompartir, PaseFoto y ClicBoton. */
   function texto(el) {
-    return (el.getAttribute("aria-label") || el.textContent || "").replace(/\s+/g, " ").trim().slice(0, 60);
+    /* El menú guarda dos versiones del nombre (corta y larga): se usa la larga. */
+    var menu = el.closest(".paginas") ? el.querySelector("span:last-child") : null;
+    return ((menu || el).getAttribute("aria-label") || (menu || el).textContent || "").replace(/\s+/g, " ").trim().slice(0, 60);
   }
   function zona(el) {
     if (el.closest(".wa-flotante")) return "flotante";
