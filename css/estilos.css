@@ -561,3 +561,7 @@ details > p { margin: 0; padding: 0 0 var(--e5); max-width: 60ch; }
 .wa-flotante:hover { background: var(--carbon); color: var(--crema); transform: translateY(-2px); }
 @media (prefers-reduced-motion: reduce) { .wa-flotante { transition: none; } .wa-flotante:hover { transform: none; } }
 @media print { .wa-flotante { display: none; } }
+
+/* Redes en el pie; una imagen sin cargar nunca rompe la barra */
+.pie__redes { margin: var(--e2) 0 0; }
+.barra__marca img { width: 46px; height: 48px; overflow: hidden; flex: none; }
