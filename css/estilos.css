@@ -328,7 +328,7 @@ input[type="checkbox"]:checked { background: var(--carbon) url("data:image/svg+x
 .dias { display: grid; gap: var(--e6); margin-top: var(--e5); }
 .dia h3 { font: 600 .75rem/1.3 var(--texto); letter-spacing: .12em; text-transform: uppercase; margin: 0 0 var(--e3); }
 .dia ul { list-style: none; margin: 0; padding: 0; border-bottom: 1px solid var(--filete-claro); }
-.dia li { display: grid; grid-template-columns: 4rem minmax(0, 1fr); align-items: baseline; gap: var(--e4); padding: var(--e4) 0 var(--e5); border-top: 1px solid var(--filete-claro); }
+.dia li { display: grid; align-items: baseline; gap: var(--e4); padding: var(--e4) 0 var(--e5); border-top: 1px solid var(--filete-claro); }
 .hora { font: 600 1rem/1 var(--texto); color: var(--mostaza); letter-spacing: .02em; }
 .artista { font: 800 clamp(1.75rem, 1.4rem + .9vw, 2.375rem)/1.02 var(--titulo); font-variation-settings: "opsz" 48, "wdth" 100; letter-spacing: -.025em; }
 .cartel__pie { margin-top: var(--e6); display: grid; gap: var(--e5); justify-items: start; }
@@ -608,3 +608,4 @@ details > p { margin: 0; padding: 0 0 var(--e5); max-width: 60ch; }
 .lista__tiquetera { display: flex; align-items: center; gap: var(--e3); margin: var(--e4) 0 0; font-weight: 600; }
 .lista__sello { display: inline-flex; background: var(--carbon); border-radius: 8px; padding: 5px 10px; }
 .lista__sello img { display: block; width: 96px; height: auto; }
+.marcas__aviso { margin: var(--e5) auto 0; padding-inline: var(--margen); text-align: center; font: 600 .875rem/1.4 var(--texto); }
