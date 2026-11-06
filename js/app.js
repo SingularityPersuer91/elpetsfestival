@@ -171,9 +171,9 @@
   var lista = $("#lista-player");
   function ponerLista() {
     if (!lista || lista.querySelector("iframe")) return;
-    var ids = lista.getAttribute("data-lista").split(",");
+    var id = lista.getAttribute("data-lista");
     var f = document.createElement("iframe");
-    f.src = "https://www.youtube-nocookie.com/embed/" + ids[0] + "?autoplay=1&rel=0&playlist=" + ids.join(",");
+    f.src = "https://www.youtube-nocookie.com/embed/videoseries?list=" + id + "&autoplay=1&rel=0";
     f.title = "Lista oficial de El Pets Festival";
     f.allow = "autoplay; encrypted-media; picture-in-picture";
     f.allowFullscreen = true;
