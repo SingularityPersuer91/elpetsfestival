@@ -182,6 +182,10 @@
     lista.appendChild(f);
   }
   ["#abrir-lista", "#abrir-lista-portada"].forEach(function (q) { var b = $(q); if (b) b.addEventListener("click", ponerLista); });
+  var flotante = document.querySelector(".wa-flotante"), principal = document.querySelector(".heroe__cartela, .portada__cartela");
+  if (flotante && principal && "IntersectionObserver" in window) {
+    new IntersectionObserver(function (e) { flotante.classList.toggle("wa-flotante--quieto", e[0].isIntersecting); }).observe(principal);
+  }
   var abrir = $("#abrir-video"), video = $("#video-yapa");
   if (abrir && video) abrir.addEventListener("click", function () { abrir.hidden = true; video.poster = "video/poster-540.jpg"; video.hidden = false; video.play().catch(function () {}); video.focus(); });
 
