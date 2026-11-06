@@ -168,6 +168,20 @@
   }
 
   /* 4) video detrás de un toque */
+  var lista = $("#lista-player");
+  function ponerLista() {
+    if (!lista || lista.querySelector("iframe")) return;
+    var ids = lista.getAttribute("data-lista").split(",");
+    var f = document.createElement("iframe");
+    f.src = "https://www.youtube-nocookie.com/embed/" + ids[0] + "?autoplay=1&rel=0&playlist=" + ids.join(",");
+    f.title = "Lista oficial de El Pets Festival";
+    f.allow = "autoplay; encrypted-media; picture-in-picture";
+    f.allowFullscreen = true;
+    f.referrerPolicy = "strict-origin-when-cross-origin";
+    lista.innerHTML = "";
+    lista.appendChild(f);
+  }
+  ["#abrir-lista", "#abrir-lista-portada"].forEach(function (q) { var b = $(q); if (b) b.addEventListener("click", ponerLista); });
   var abrir = $("#abrir-video"), video = $("#video-yapa");
   if (abrir && video) abrir.addEventListener("click", function () { abrir.hidden = true; video.poster = "video/poster-540.jpg"; video.hidden = false; video.play().catch(function () {}); video.focus(); });
 

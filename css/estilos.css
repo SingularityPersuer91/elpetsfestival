@@ -609,3 +609,16 @@ details > p { margin: 0; padding: 0 0 var(--e5); max-width: 60ch; }
 .lista__sello { display: inline-flex; background: var(--carbon); border-radius: 8px; padding: 5px 10px; }
 .lista__sello img { display: block; width: 96px; height: auto; }
 .marcas__aviso { margin: var(--e5) auto 0; padding-inline: var(--margen); text-align: center; font: 600 .875rem/1.4 var(--texto); }
+
+/* ---------- lista oficial: el reproductor de YouTube carga solo al tocar ---------- */
+.musica { background: var(--mostaza); color: var(--carbon); }
+.musica .indice::before { background: var(--carbon); }
+.musica .intro { max-width: 40ch; }
+.musica__in { display: grid; gap: var(--e6); }
+.musica__acciones { display: flex; flex-wrap: wrap; align-items: center; gap: var(--e3) var(--e5); margin-top: var(--e5); }
+.musica__acciones .enlace { color: var(--carbon); }
+.musica__player { aspect-ratio: 16 / 9; background: var(--carbon); border: 6px solid var(--carbon); }
+.musica__portada { display: block; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: pointer; }
+.musica__portada img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.musica__player iframe { display: block; width: 100%; height: 100%; border: 0; }
+@media (min-width: 900px) { .musica__in { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: center; gap: var(--e7); } }
