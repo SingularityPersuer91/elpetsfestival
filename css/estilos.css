@@ -626,3 +626,67 @@ details > p { margin: 0; padding: 0 0 var(--e5); max-width: 60ch; }
 .musica .boton:active { background: var(--carbon); }
 .wa-flotante--quieto { opacity: 0; visibility: hidden; pointer-events: none; }
 @media (min-width: 1024px) { .aviso-cookies { left: auto; right: 24px; margin-inline: 0; } }
+
+/* ---------- La Feria: boletos que abren cada pieza al tocar ---------- */
+.feria { position: relative; background: var(--canela); color: var(--crema); padding-top: calc(var(--sec) + 40px); }
+.feria::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 40px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='40'%3E%3Cpath d='M0 0H48V16A24 24 0 0 1 0 16Z' fill='%23FFF4E0'/%3E%3Cpath d='M48 0H96V16A24 24 0 0 1 48 16Z' fill='%23231A15'/%3E%3C/svg%3E") repeat-x left top; }
+.feria .indice::before { background: var(--mostaza); }
+.feria__cabeza .intro { max-width: 42ch; }
+.feria__boletos { list-style: none; margin: var(--e6) 0 0; padding: 0; display: grid; gap: var(--e4); }
+.boleto { position: relative; display: grid; gap: var(--e2); width: 100%; min-height: 200px; padding: var(--e5); text-align: left; cursor: pointer; background: var(--crema); color: var(--carbon); border: 0; border-top: 6px solid var(--mostaza); border-radius: 2px; font: inherit; overflow: hidden; }
+.boleto__arte { position: absolute; right: var(--e4); top: var(--e4); width: 72px; height: 72px; }
+.boleto__kicker { font: 700 .75rem/1.3 var(--texto); letter-spacing: .12em; text-transform: uppercase; }
+.boleto__titulo, .boleto__texto { padding-right: 72px; }
+.boleto__titulo { font: 800 clamp(1.625rem, 1.3rem + 1vw, 2.25rem)/1.02 var(--titulo); letter-spacing: -.025em; }
+.boleto__texto { font: 400 1rem/1.4 var(--texto); }
+.boleto__ir { justify-self: start; margin-top: var(--e3); padding-top: var(--e3); width: 100%; border-top: 2px dashed var(--carbon); font: 700 1rem/1.2 var(--texto); position: relative; }
+.boleto__ir::before, .boleto__ir::after { content: ""; position: absolute; top: -11px; width: 20px; height: 20px; border-radius: 50%; background: var(--canela); }
+.boleto__ir::before { left: calc(-1 * var(--e5) - 10px); } .boleto__ir::after { right: calc(-1 * var(--e5) - 10px); }
+.boleto:hover .boleto__ir { color: var(--canela-oscura); }
+.feria__escena { margin-top: var(--e5); scroll-margin-top: 88px; }
+.feria__marco { background: var(--crema); color: var(--carbon); border-top: 6px solid var(--mostaza); border-radius: 2px; padding: var(--e5); }
+.feria__barra { display: flex; align-items: center; justify-content: space-between; gap: var(--e4); }
+.feria__barra h3 { margin: 0; font: 800 clamp(1.5rem, 1.2rem + 1vw, 2rem)/1.05 var(--titulo); outline: none; }
+.feria__cerrar { min-height: 44px; padding: 0 var(--e3); background: none; border: 1px solid var(--carbon); border-radius: 2px; color: var(--carbon); font: 600 .9375rem/1 var(--texto); cursor: pointer; }
+.feria__ayuda { margin: var(--e2) 0 var(--e4); }
+.feria__estado { min-height: 1.4em; margin: var(--e3) 0 0; font-weight: 600; }
+.feria__plan { display: grid; gap: var(--e5); }
+.feria__grupo { border: 0; margin: 0 0 var(--e4); padding: 0; }
+.feria__grupo legend { padding: 0; margin-bottom: var(--e2); font-weight: 700; }
+.feria__grupo div { display: flex; flex-wrap: wrap; gap: var(--e2); }
+.feria__grupo input { position: absolute; opacity: 0; }
+.feria__grupo span { display: flex; align-items: center; min-height: 44px; padding: 0 var(--e3); border: 1px solid var(--carbon); border-radius: 2px; cursor: pointer; font-weight: 600; }
+.feria__grupo input:checked + span { background: var(--carbon); color: var(--crema); }
+.feria__grupo input:focus-visible + span { outline: 2px solid var(--canela); outline-offset: 2px; }
+.feria__acciones { display: grid; gap: var(--e2); margin-top: var(--e4); }
+.feria__acciones .boton { width: 100%; }
+.feria__guardar { margin-top: var(--e3); text-align: center; } .feria__guardar img { width: 216px; height: auto; margin-inline: auto; }
+.feria__fin { text-align: center; } .feria__rango { margin: 0; font: 800 clamp(2rem, 1.6rem + 1.6vw, 3rem)/1 var(--titulo); color: var(--canela); }
+.cuch { display: grid; justify-items: center; gap: var(--e3); }
+.cuch__marco { width: min(100%, 400px, calc((100dvh - 260px) * .692)); min-width: 240px; border: 3px solid var(--carbon); border-radius: 2px; }
+.cuch__marco canvas { display: block; width: 100%; height: auto; aspect-ratio: 360 / 520; touch-action: manipulation; cursor: pointer; }
+.cuch__servir { width: 100%; max-width: 400px; min-height: 60px; font-size: 1.25rem; touch-action: manipulation; }
+.cuch__pie { display: flex; align-items: center; justify-content: space-between; gap: var(--e3); width: 100%; max-width: 400px; }
+.cuch__res { margin: 0; font-weight: 700; }
+#feria-elige .boton { width: 100%; }
+.feria__fin { display: grid; gap: var(--e2); justify-items: center; align-content: start; } .feria__fin p { margin: 0; } .feria__fin .boton { width: 100%; max-width: 320px; }
+.feria__dato { font-weight: 600; } .feria__nota { font-weight: 700; color: var(--canela-oscura); } .feria__mejor { font-size: .9375rem; }
+.feria__meta { display: flex; align-items: center; gap: var(--e3); margin-top: var(--e3); } .feria__meta canvas { display: block; width: 72px; height: auto; aspect-ratio: 9 / 16; filter: blur(5px); } .feria__meta p { font-size: .9375rem; }
+.feria-abierta .wa-flotante { opacity: 0; visibility: hidden; pointer-events: none; }
+@media (min-width: 720px) { .feria__boletos { grid-template-columns: 1fr 1fr; } .feria__plan { grid-template-columns: minmax(0, 1fr) 280px; align-items: start; } }
+.holo { position: relative; width: min(280px, 72vw); margin-inline: auto; overflow: hidden; border-radius: 4px; transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform 160ms var(--curva); touch-action: pan-y; }
+.holo canvas { display: block; width: 100%; height: auto; aspect-ratio: 9 / 16; }
+.holo__brillo { position: absolute; inset: 0; pointer-events: none; mix-blend-mode: color-dodge; opacity: .6; background: linear-gradient(115deg, transparent 32%, rgb(255 244 224 / .75) 44%, rgb(61 190 147 / .55) 51%, rgb(242 179 61 / .65) 58%, transparent 70%) var(--bx, 0%) var(--by, 0%) / 260% 260%; animation: holo 3.8s ease-in-out infinite alternate; }
+.holo--activo .holo__brillo { animation: none; }
+@keyframes holo { from { background-position: 0% 0%; } to { background-position: 100% 100%; } }
+@media (prefers-reduced-motion: reduce) { .holo { transition: none; } .holo__brillo { animation: none; opacity: .3; } }
+.feria__invita { display: grid; justify-items: center; gap: var(--e3); padding: var(--e6) var(--e5); text-align: center; background: var(--crema); color: var(--carbon); border-top: 6px solid var(--mostaza); border-radius: 2px; scroll-margin-top: 88px; }
+.feria__invita img { width: min(100%, 460px); height: auto; }
+.feria__invita h3 { margin: 0; font: 800 clamp(2rem, 1.5rem + 2.4vw, 3.25rem)/1 var(--titulo); letter-spacing: -.03em; color: var(--canela); outline: none; }
+.feria__invita p { margin: 0; }
+.feria__invita-texto { max-width: 46ch; font: 600 var(--t-lead)/1.4 var(--texto); }
+.feria__invita-nota { font-weight: 700; }
+.feria__invita-botones { display: grid; gap: var(--e2); width: 100%; max-width: 520px; margin-top: var(--e2); }
+.feria__invita-botones .boton { width: 100%; }
+@media (min-width: 560px) { .feria__invita-botones { grid-template-columns: 1fr 1fr; } }
+.feria-abierta .aviso-cookies { display: none; }

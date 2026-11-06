@@ -106,7 +106,7 @@
     }
     if (el.tagName === "BUTTON") {
       var id = el.id;
-      var nombre = id === "abrir-video" ? "ClicVideo" : id === "descargar" ? "PaseDescargar" : id === "compartir" ? "PaseCompartir" : "ClicBoton";
+      var nombre = id === "abrir-video" ? "ClicVideo" : id === "descargar" ? "PaseDescargar" : id === "compartir" ? "PaseCompartir" : id === "feria-descargar" ? "TarjetaDescargar" : id === "feria-compartir" ? "TarjetaCompartir" : "ClicBoton";
       window.fbq("trackCustom", nombre, datos);
       return;
     }
@@ -180,6 +180,12 @@
       if (document.getElementById("aviso-cookies")) ajustarAlto(aviso);
     });
   }
+
+  /* La Feria invita con su propio saludo; la decisión es la misma de siempre. */
+  window.PFCookies = {
+    estado: leer,
+    decidir: function (valor) { guardar(valor); quitarAviso(); if (valor === "si") cargarPixel(); }
+  };
 
   function iniciar() {
     var decision = leer();
