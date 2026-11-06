@@ -133,7 +133,7 @@
     if (!cargado || !window.fbq || !e.target.closest) return;
     var el = e.target.closest("a[href], button, summary");
     if (!el || el.disabled) return;
-    if (el.closest("#aviso-cookies") || el.id === "cambiar-cookies" || el.classList.contains("saltar")) return;
+    if (el.closest("#aviso-cookies") || el.closest(".cuch") || el.id === "cambiar-cookies" || el.classList.contains("saltar")) return;
     medir(el);
   }, true);
   document.addEventListener("change", function (e) {

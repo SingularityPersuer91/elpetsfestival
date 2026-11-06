@@ -173,17 +173,17 @@
     var vFeria = ((document.querySelector('script[src*="js/app.js"]') || {}).src || "").split("?")[1] || "";
     var pedir = function (src) { return new Promise(function (ok, mal) { var e = document.createElement("script"); e.src = src + (vFeria ? "?" + vFeria : ""); e.onload = ok; e.onerror = mal; document.head.appendChild(e); }); };
     var feriaLista = null;
-    var abrirFeria = function (pieza, op) {
+    var abrirFeria = function (pieza, op, boton) {
       feriaLista = feriaLista || Promise.all([pedir("js/tarjeta.js"), pedir("js/juego-cucharon.js")]).then(function () { return pedir("js/feria.js"); });
-      feriaLista.then(function () { window.PFFeria.abrir(pieza, op); }, function () { feriaLista = null; });
+      feriaLista.then(function () { window.PFFeria.abrir(pieza, op, boton); }, function () { feriaLista = null; });
     };
     Array.prototype.forEach.call(boletos, function (b) {
-      b.addEventListener("click", function () { abrirFeria(b.getAttribute("data-pieza")); });
+      b.addEventListener("click", function () { abrirFeria(b.getAttribute("data-pieza"), null, b); });
     });
     /* reto de un amigo: #reto-23, sin nombres ni datos personales */
     var verReto = function () {
-      var m = /^#reto-(\d{1,3})$/.exec(location.hash);
-      if (m && +m[1] > 0) abrirFeria("cucharon", { reto: +m[1] });
+      var m = /^#reto-([1-9]\d{0,3})$/.exec(location.hash);
+      if (m) abrirFeria("cucharon", { reto: +m[1] });
     };
     window.addEventListener("hashchange", verReto); verReto();
   }

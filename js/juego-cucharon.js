@@ -70,7 +70,7 @@
       '<button class="boton cuch__servir" type="button" id="cuch-servir">Servir</button><div class="cuch__pie"><button class="feria__cerrar" type="button" id="cuch-sonido" aria-pressed="' + sonido + '">' + (sonido ? "Sonido sí" : "Sonido no") + '</button><p class="cuch__res" id="cuch-res" aria-live="polite"></p></div></div>';
     var lz = document.getElementById("cuch-lienzo"), ctx = lz.getContext("2d"), servir = document.getElementById("cuch-servir"), res = document.getElementById("cuch-res");
     var r = Math.min(window.devicePixelRatio || 1, 2); lz.width = W * r; lz.height = H * r;
-    var e = crear(), lento = quieto(), x = 40, dir = 1, ant = 0, cam = 0, sac = 0, rebote = 0, chop = 0, restos = [], chispas = [], letreros = [], cayendo = false, finT = 0;
+    var e = crear(), lento = quieto(), x = 40, dir = 1, ant = 0, cam = 0, sac = 0, rebote = 0, chop = 0, restos = [], chispas = [], letreros = [], cayendo = false, finT = 0, ultimo = 0;
     var perro = window.PFTarjeta.imagen(op.perrito);
     function letrero(tx, col) { letreros = [{ tx: tx, col: col, y: 156, v: 1 }]; }
     function chispear(px, py, n) {
@@ -80,6 +80,9 @@
     function tocar(ev) {
       if (ev) ev.preventDefault();
       if (!e.vivo || cayendo) return;
+      var ahora = performance.now();
+      if (ahora - ultimo < 120) return; /* un doble toque no suelta otra pieza en el borde */
+      ultimo = ahora;
       var pv = velocidad(e.pisos), top = e.torre[e.torre.length - 1], px = lento ? top.x + Math.round((x - top.x) / 14) * 14 : x;
       var t = colocar(e, px, lento ? 8 : PERFECTO), y = PISO - e.pisos * PH + cam;
       if (t.cae) restos.push({ x: t.cae.x, y: y, w: t.cae.w, vy: 40, t: e.pisos % TIPOS.length });

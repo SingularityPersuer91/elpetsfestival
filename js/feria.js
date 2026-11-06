@@ -6,14 +6,14 @@
   var ARTISTAS = { "Sábado 12": ["I.N.R.I", "EMPICCCCC"], "Domingo 13": ["Jammal Sánchez", "GHETTO WARRIOR"] };
   var MOTIVOS = ["Comida típica", "Regalos de Navidad", "Música en vivo", "Festival canino"];
   var NOMBRES = ["Bully", "Chiquito", "Mestizo", "Peludo", "Salchicha"];
-  var abierta = null;
+  var abierta = null, ficha = 0, origen = null;
 
   function html(s) { var d = document.createElement("div"); d.innerHTML = s; return d; }
   function evento(n, d) { if (window.fbq) window.fbq("trackCustom", n, d); }
   function cerrar() {
-    abierta = null; escena.hidden = true; escena.innerHTML = ""; document.body.classList.remove("feria-abierta");
+    abierta = null; ficha += 1; escena.hidden = true; escena.innerHTML = ""; document.body.classList.remove("feria-abierta");
     if (window.PFCucharon) window.PFCucharon.detener();
-    var b = document.querySelector(".feria__boletos button"); if (b) b.focus();
+    var b = origen || document.querySelector(".feria__boletos button"); if (b) b.focus();
   }
   function marco(titulo, ayuda) {
     escena.innerHTML = '<div class="feria__marco"><div class="feria__barra"><h3 tabindex="-1">' + titulo + '</h3><button class="feria__cerrar" type="button" id="feria-cerrar">Cerrar</button></div><p class="feria__ayuda">' + ayuda + '</p><div id="feria-cuerpo"></div><p class="feria__estado" id="feria-estado" role="status"></p></div>';
@@ -30,22 +30,35 @@
     return { nodos: c, puede: puede, activar: function (leer, texto) {
       var est = document.getElementById("feria-estado"), nombre = "sticker-el-pets-festival.png";
       var des = document.getElementById("feria-descargar"), com = document.getElementById("feria-compartir");
+      var memo = null, clave = "", urlPrevia = null;
+      /* el archivo se deja listo antes del toque: en iPhone compartir debe salir directo del gesto */
+      var listo = function () {
+        var d = leer(), k = JSON.stringify(d);
+        if (k !== clave) {
+          clave = k; if (com) com.disabled = true;
+          var trabajo = window.PFTarjeta.exportar(d);
+          memo = trabajo;
+          trabajo.then(function (b) { trabajo.blob = b; if (com && memo === trabajo) com.disabled = false; }, function () { est.textContent = "No se pudo preparar el sticker. Inténtalo otra vez."; });
+        }
+        return memo;
+      };
+      listo();
+      var form = document.getElementById("feria-plan");
+      if (form) form.addEventListener("change", listo);
       des.addEventListener("click", function () {
         est.textContent = "Preparando tu sticker…";
-        window.PFTarjeta.exportar(leer()).then(function (b) {
-          var url = URL.createObjectURL(b), a = document.createElement("a"); a.href = url; a.download = nombre; document.body.appendChild(a); a.click(); a.remove();
-          if (!puede) {
-            var g = document.getElementById("feria-guardar"); g.innerHTML = '<img alt="Tu sticker listo para guardar" width="216" height="384"><p>Si no se descargó, mantén pulsada la imagen para guardarla.</p>'; g.firstChild.src = url; g.hidden = false;
-            est.textContent = "Tu sticker está listo.";
-          } else { est.textContent = "Listo: tu sticker se descargó."; setTimeout(function () { URL.revokeObjectURL(url); }, 4000); }
+        listo().then(function (b) {
+          if (urlPrevia) URL.revokeObjectURL(urlPrevia);
+          var url = urlPrevia = URL.createObjectURL(b), a = document.createElement("a"); a.href = url; a.download = nombre; document.body.appendChild(a); a.click(); a.remove();
+          var g = document.getElementById("feria-guardar"); g.innerHTML = '<img alt="Tu sticker listo para guardar" width="216" height="384"><p>Si no se guardó solo, mantén pulsada la imagen para guardarla.</p>'; g.firstChild.src = url; g.hidden = false;
+          est.textContent = "Tu sticker está listo.";
         }, function () { est.textContent = "No se pudo preparar el sticker. Inténtalo otra vez."; });
       });
       if (com) com.addEventListener("click", function () {
-        est.textContent = "Preparando tu sticker…";
-        window.PFTarjeta.exportar(leer()).then(function (b) {
-          return navigator.share({ files: [new File([b], nombre, { type: "image/png" })], title: "El Pets Festival 2026", text: texto || "Nos vemos en El Pets Festival · 12 y 13 de diciembre de 2026 · Parque Bicentenario, Quito · " + window.PFTarjeta.URL_PUBLICA })
-            .then(function () { est.textContent = ""; }, function (e) { est.textContent = e && e.name === "AbortError" ? "" : "No se pudo compartir. Descarga el sticker y súbelo desde tu galería."; });
-        }, function () { est.textContent = "No se pudo preparar el sticker. Inténtalo otra vez."; });
+        var b = listo().blob;
+        if (!b) return;
+        navigator.share({ files: [new File([b], nombre, { type: "image/png" })], title: "El Pets Festival 2026", text: texto || "Nos vemos en El Pets Festival · 12 y 13 de diciembre de 2026 · Parque Bicentenario, Quito · " + window.PFTarjeta.URL_PUBLICA })
+          .then(function () { est.textContent = ""; }, function (e) { est.textContent = e && e.name === "AbortError" ? "" : "No se pudo compartir. Descarga el sticker y súbelo desde tu galería."; });
       });
     } };
   }
@@ -114,7 +127,9 @@
   function abrirCucharon(op) {
     var reto = op && op.reto;
     if (reto) evento("RetoAbrir", { pisos: reto });
+    var mia = ficha;
     window.PFTarjeta.preparar().then(function () {
+      if (mia !== ficha) return;
       if (perritoElegido) return jugar(reto);
       var c = marco("El Cucharón de la Yapa", reto ? "Te retaron: " + reto + " pisos. Elige tu perrito y responde." : "Elige tu perrito y sirve la torre más alta.");
       c.className = "feria__juego";
@@ -125,17 +140,17 @@
   }
   var invitado = false;
   function invitar(seguir) {
-    invitado = true;
     escena.innerHTML = '<div class="feria__invita"><img src="img/pictos/grupo_la_mesa.svg" width="600" height="190" alt=""><h3 tabindex="-1">¡Qué bueno verte en La Feria!</h3><p class="feria__invita-texto">Ayúdanos a mejorar tu experiencia. Si aceptas, usamos cookies de Meta para medir la web y mostrar anuncios del festival.</p><p class="feria__invita-nota">Decidas lo que decidas, puedes jugar igual.</p><div class="feria__invita-botones"><button class="boton" type="button" id="feria-si">Aceptar y entrar</button><button class="boton" type="button" id="feria-no">Entrar sin cookies</button></div><p><a class="enlace" href="privacidad.html">Cómo cuidamos tus datos</a></p></div>';
     escena.hidden = false; document.body.classList.add("feria-abierta");
     escena.querySelector("h3").focus({ preventScroll: true });
     escena.scrollIntoView({ block: "start", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
     [["feria-si", "si"], ["feria-no", "no"]].forEach(function (b) {
-      document.getElementById(b[0]).addEventListener("click", function () { window.PFCookies.decidir(b[1]); seguir(); });
+      document.getElementById(b[0]).addEventListener("click", function () { invitado = true; window.PFCookies.decidir(b[1]); seguir(); });
     });
   }
-  window.PFFeria = { abrir: function (p, op) {
-    abierta = p;
+  window.PFFeria = { abrir: function (p, op, boton) {
+    abierta = p; ficha += 1; origen = boton || null;
+    if (window.PFCucharon) window.PFCucharon.detener();
     var seguir = function () { if (p === "plan") abrirPlan(); else if (p === "cucharon") abrirCucharon(op); };
     if (!invitado && window.PFCookies && !window.PFCookies.estado()) invitar(seguir); else seguir();
   } };
