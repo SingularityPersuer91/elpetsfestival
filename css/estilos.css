@@ -594,3 +594,17 @@ details > p { margin: 0; padding: 0 0 var(--e5); max-width: 60ch; }
   .oso { grid-column: 1 / span 4; grid-row: 2; margin-top: var(--e5); align-self: start; }
   .oso img { aspect-ratio: 4 / 5; object-position: 50% 50%; }
 }
+
+/* ---------- marcas: franja crema antes del pie, solo logos originales y sin enlace ---------- */
+.marcas { background: var(--crema); border-top: 1px solid var(--filete); padding-block: var(--e7); }
+.marcas__fila { list-style: none; margin-inline: auto; padding: 0; width: min(100% - 2 * var(--margen), var(--ancho)); display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--e6) clamp(1.5rem, 5vw, 4.5rem); }
+.marcas__logo { display: flex; align-items: center; }
+.marcas__logo img { display: block; width: var(--w); height: auto; }
+.marcas__logo--clapzy { --w: clamp(112px, 12vw, 164px); }
+.marcas__logo--pilsener { --w: clamp(92px, 9.6vw, 132px); }
+.marcas__logo--meet2go { --w: clamp(92px, 9vw, 120px); background: var(--carbon); border-radius: 8px; padding: 6px 12px; }
+.marcas__logo--mediarptv { --w: clamp(100px, 10.5vw, 146px); }
+.marcas__logo--brandlab { --w: clamp(112px, 12vw, 164px); }
+.lista__tiquetera { display: flex; align-items: center; gap: var(--e3); margin: var(--e4) 0 0; font-weight: 600; }
+.lista__sello { display: inline-flex; background: var(--carbon); border-radius: 8px; padding: 5px 10px; }
+.lista__sello img { display: block; width: 96px; height: auto; }
