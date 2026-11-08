@@ -691,16 +691,18 @@ details > p { margin: 0; padding: 0 0 var(--e5); max-width: 60ch; }
 @media (min-width: 560px) { .feria__invita-botones { grid-template-columns: 1fr 1fr; } }
 .feria-abierta .aviso-cookies { display: none; }
 
-/* Fila de marcas en secciones (8-nov; ajuste de José: logos a la derecha, uno encima del otro, misma altura y en línea recta) */
-.firmas { display: flex; flex-direction: column; align-items: stretch; gap: .9rem; margin-top: var(--e4); padding: .9rem 1.1rem; background: var(--crema); border: 1px solid var(--filete); border-radius: 4px; color: var(--carbon); box-sizing: border-box; }
-.firmas__grupo { display: flex; align-items: center; justify-content: flex-end; gap: 1rem; min-width: 0; }
-.firmas__rol { margin-right: auto; font: 700 .6875rem/1 var(--texto); letter-spacing: .08em; text-transform: uppercase; color: var(--carbon); opacity: .8; }
-.firmas__logo { display: inline-flex; align-items: center; justify-content: flex-end; height: 34px; }
-.firmas__logo img { display: block; height: var(--h); width: auto; max-width: 140px; }
-.firmas__logo--mediarptv { --h: 34px; }
-.firmas__logo--pilsener { --h: 30px; }
-.firmas__logo--clapzy { --h: 22px; }
-.firmas__logo--meet2go { --h: 22px; background: var(--carbon); border-radius: 2px; padding: 6px 9px; height: auto; }
-.firmas__logo--brandlab { --h: 22px; }
+/* Fila de marcas en secciones (8-nov; ajuste 2 de José: logos centrados sobre un mismo eje en una columna fija a la derecha) */
+.firmas { display: flex; flex-direction: column; align-items: stretch; gap: .85rem; margin-top: var(--e4); padding: .9rem 1.1rem; background: var(--crema); border: 1px solid var(--filete); border-radius: 4px; color: var(--carbon); box-sizing: border-box; }
+.firmas__grupo { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-width: 0; }
+.firmas__rol { font: 700 .6875rem/1 var(--texto); letter-spacing: .08em; text-transform: uppercase; color: var(--carbon); opacity: .8; white-space: nowrap; }
+.firmas__marcas { flex: 0 0 11.5rem; width: 11.5rem; display: flex; align-items: center; justify-content: center; gap: .75rem; }
+.firmas__logo { display: inline-flex; align-items: center; justify-content: center; }
+.firmas__logo img { display: block; height: auto; width: var(--w); max-width: 100%; }
+.firmas__logo--mediarptv { --w: 96px; }
+.firmas__logo--pilsener { --w: 70px; }
+.firmas__logo--clapzy { --w: 92px; }
+.firmas__logo--meet2go { --w: 78px; background: var(--carbon); border-radius: 2px; padding: 6px 9px; }
+.firmas__logo--brandlab { --w: 116px; }
 .cartel__pie .firmas { width: 100%; max-width: 30rem; grid-column: 1 / -1; }
 .heroe__cartela .firmas { margin-bottom: var(--e3); }
+@media (max-width: 360px) { .firmas__marcas { flex-basis: 10rem; width: 10rem; } .firmas__logo--clapzy { --w: 80px; } .firmas__logo--pilsener { --w: 62px; } }
