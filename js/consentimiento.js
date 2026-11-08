@@ -111,7 +111,11 @@
       return;
     }
     var href = el.href || "";
-    if (href.indexOf("wa.me/") > -1) {
+    if (href.indexOf("meet2go.com") > -1) {
+      datos.content_name = "Entrada";
+      window.fbq("track", "InitiateCheckout", datos);
+      window.fbq("trackCustom", "CompraEntrada", datos);
+    } else if (href.indexOf("wa.me/") > -1) {
       var tema = temaWhatsApp(href);
       datos.content_name = tema;
       window.fbq("track", "Contact", datos);

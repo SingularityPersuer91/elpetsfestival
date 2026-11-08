@@ -690,3 +690,16 @@ details > p { margin: 0; padding: 0 0 var(--e5); max-width: 60ch; }
 .feria__invita-botones .boton { width: 100%; }
 @media (min-width: 560px) { .feria__invita-botones { grid-template-columns: 1fr 1fr; } }
 .feria-abierta .aviso-cookies { display: none; }
+
+/* Fila de marcas en secciones (8-nov): siempre sobre crema para que MEDIARPTV se lea */
+.firmas { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1.5rem; margin-top: var(--e4); padding: .75rem 1rem; background: var(--crema); border: 1px solid var(--filete); border-radius: 4px; color: var(--carbon); }
+.firmas__grupo { display: inline-flex; align-items: center; gap: .6rem; min-width: 0; }
+.firmas__rol { font: 700 .6875rem/1 var(--texto); letter-spacing: .08em; text-transform: uppercase; color: var(--carbon); opacity: .8; }
+.firmas__logo { display: inline-flex; align-items: center; }
+.firmas__logo img { display: block; height: auto; width: var(--w); max-width: 100%; }
+.firmas__logo--mediarptv { --w: 84px; }
+.firmas__logo--pilsener { --w: 64px; }
+.firmas__logo--clapzy { --w: 86px; }
+.firmas__logo--meet2go { --w: 66px; background: var(--carbon); border-radius: 2px; padding: 3px 7px; }
+.firmas__logo--brandlab { --w: 96px; }
+.cartel__pie .firmas { width: 100%; grid-column: 1 / -1; box-sizing: border-box; }

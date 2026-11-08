@@ -206,7 +206,7 @@
     new IntersectionObserver(function (e) { flotante.classList.toggle("wa-flotante--quieto", e[0].isIntersecting); }).observe(principal);
   }
   var abrir = $("#abrir-video"), video = $("#video-yapa");
-  if (abrir && video) abrir.addEventListener("click", function () { abrir.hidden = true; video.poster = "video/poster-540.jpg"; video.hidden = false; video.play().catch(function () {}); video.focus(); });
+  if (abrir && video) abrir.addEventListener("click", function () { abrir.hidden = true; video.poster = "video/entradas/poster-v1-540.jpg"; video.hidden = false; video.play().catch(function () {}); video.focus(); });
 
   /* 5) tira de fechas (hora de Quito, UTC−5): se resalta la casilla publicada cuya fecha ya llegó; si ninguna llegó, la próxima publicada */
   var hoy = new Date(Date.now() - 5 * 3600 * 1000).toISOString().slice(0, 10), abierta = null, proxima = null;
