@@ -2,7 +2,7 @@
 (function () {
   var escena = document.getElementById("feria-escena");
   if (!escena) return;
-  var ENTRADA = "https://wa.me/593996876304?text=Hola%2C%20quiero%20que%20me%20avisen%20cuando%20abra%20la%20venta%20de%20entradas%20de%20El%20Pets%20Festival.";
+  var ENTRADA = "https://www.meet2go.com/ev/elpetsfestivaluio";
   var ARTISTAS = { "Sábado 12": ["I.N.R.I", "EMPICCCCC"], "Domingo 13": ["Jammal Sánchez", "GHETTO WARRIOR"] };
   var MOTIVOS = ["Comida típica", "Regalos de Navidad", "Música en vivo", "Festival canino"];
   var NOMBRES = ["Bully", "Chiquito", "Mestizo", "Peludo", "Salchicha"];
@@ -23,42 +23,74 @@
     escena.scrollIntoView({ block: "start", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
     return document.getElementById("feria-cuerpo");
   }
-  function acciones(d) {
-    var puede = false;
-    try { puede = !!(navigator.canShare && window.File && navigator.canShare({ files: [new File(["x"], "x.png", { type: "image/png" })] })); } catch (e) { puede = false; }
-    var c = html('<div class="feria__acciones">' + '<button class="boton" type="button" id="feria-descargar">Descargar sticker</button>' + (puede ? '<button class="boton boton--linea" type="button" id="feria-compartir">Compartir</button>' : "") + '<a class="boton boton--linea" href="' + ENTRADA + '" target="_blank" rel="noopener">Quiero mi entrada</a></div><div class="feria__guardar" id="feria-guardar" hidden></div>').childNodes;
-    return { nodos: c, puede: puede, activar: function (leer, texto) {
-      var est = document.getElementById("feria-estado"), nombre = "sticker-el-pets-festival.png";
-      var des = document.getElementById("feria-descargar"), com = document.getElementById("feria-compartir");
-      var memo = null, clave = "", urlPrevia = null;
-      /* el archivo se deja listo antes del toque: en iPhone compartir debe salir directo del gesto */
-      var listo = function () {
-        var d = leer(), k = JSON.stringify(d);
-        if (k !== clave) {
-          clave = k; if (com) com.disabled = true;
-          var trabajo = window.PFTarjeta.exportar(d);
-          memo = trabajo;
-          trabajo.then(function (b) { trabajo.blob = b; if (com && memo === trabajo) com.disabled = false; }, function () { est.textContent = "No se pudo preparar el sticker. Inténtalo otra vez."; });
+  function acciones() {
+    var G = window.PFGuardar, T = window.PFTarjeta, conVideo = !!T.tipoVideo();
+    var c = html('<div class="feria__acciones">' + (conVideo ? '<button class="boton" type="button" id="feria-video">Video holográfico para historias</button>' : "") +
+      '<button class="boton' + (conVideo ? " boton--linea" : "") + '" type="button" id="feria-descargar">Imagen del sticker</button>' +
+      '<a class="boton boton--linea" href="' + ENTRADA + '" target="_blank" rel="noopener">Quiero mi entrada</a></div>' +
+      '<p class="feria__aviso" id="feria-aviso"' + (G.interno ? "" : " hidden") + ">" + G.AVISO_INTERNO + "</p>" +
+      '<div class="feria__guardar" id="feria-guardar" hidden></div>').childNodes;
+    return { nodos: c, activar: function (leer) {
+      var est = document.getElementById("feria-estado"), base = "sticker-el-pets-festival";
+      var des = document.getElementById("feria-descargar"), vb = document.getElementById("feria-video"), caja = document.getElementById("feria-guardar");
+      var TXT_V = vb ? vb.textContent : "", TXT_I = des.textContent, urlVer = null;
+      var img = { k: "", t: null, f: null }, vid = { k: "", f: null, grabando: false };
+      var clave = function () { return JSON.stringify(leer()); };
+      var prepImg = function () {
+        var k = clave();
+        if (img.k !== k) {
+          img.k = k; img.f = null;
+          img.t = T.exportar(leer()).then(function (b) { var fi = new File([b], base + ".png", { type: "image/png" }); if (img.k === k) img.f = fi; return fi; });
+          img.t.catch(function () { est.textContent = "No se pudo preparar el sticker. Inténtalo otra vez."; });
         }
-        return memo;
+        return img.t;
       };
-      listo();
+      var ver = function (fi) {
+        if (urlVer) URL.revokeObjectURL(urlVer);
+        urlVer = URL.createObjectURL(fi);
+        var esV = fi.type.indexOf("video") === 0;
+        caja.innerHTML = (esV ? '<video muted loop autoplay playsinline controls width="216" height="384"></video>' : '<img alt="Tu sticker listo para guardar" width="216" height="384">') +
+          "<p>" + (esV ? "Si no se guardó, abre el video, toca Compartir y elige «Guardar video»." : "Si no se guardó, mantén pulsada la imagen y elige «Guardar en Fotos».") + "</p>";
+        caja.firstChild.src = urlVer; caja.hidden = false;
+      };
+      var entregar = function (fi) {
+        if (G.puede(fi)) {
+          G.compartir(fi).then(function () { est.textContent = ""; }, function (e) {
+            if (e && e.name === "AbortError") { est.textContent = ""; return; }
+            G.bajar(fi); ver(fi); est.textContent = "Tu sticker se descargó.";
+          });
+        } else {
+          G.bajar(fi); ver(fi);
+          est.textContent = G.interno ? G.AVISO_INTERNO : (fi.type.indexOf("video") === 0 ? "Tu video holográfico se descargó (" + fi.name.split(".").pop().toUpperCase() + ", 1080×1920). Súbelo a tus historias desde tu galería." : "Tu sticker se descargó como imagen PNG de 1080×1920.");
+        }
+      };
+      var reiniciar = function () { vid.f = null; if (vb && !vid.grabando) vb.textContent = TXT_V; des.textContent = TXT_I; };
+      prepImg();
       var form = document.getElementById("feria-plan");
-      if (form) form.addEventListener("change", listo);
+      if (form) form.addEventListener("change", function () { reiniciar(); prepImg(); });
       des.addEventListener("click", function () {
+        if (img.f && img.k === clave()) { entregar(img.f); return; }
         est.textContent = "Preparando tu sticker…";
-        listo().then(function (b) {
-          if (urlPrevia) URL.revokeObjectURL(urlPrevia);
-          var url = urlPrevia = URL.createObjectURL(b), a = document.createElement("a"); a.href = url; a.download = nombre; document.body.appendChild(a); a.click(); a.remove();
-          var g = document.getElementById("feria-guardar"); g.innerHTML = '<img alt="Tu sticker listo para guardar" width="216" height="384"><p>Si no se guardó solo, mantén pulsada la imagen para guardarla.</p>'; g.firstChild.src = url; g.hidden = false;
-          est.textContent = "Tu sticker está listo.";
-        }, function () { est.textContent = "No se pudo preparar el sticker. Inténtalo otra vez."; });
+        prepImg().then(function (fi) {
+          if (G.puede(fi)) { des.textContent = "Guardar imagen en mi teléfono"; est.textContent = "Tu imagen está lista: tócala otra vez para guardarla o subirla a tus historias."; }
+          else entregar(fi);
+        });
       });
-      if (com) com.addEventListener("click", function () {
-        var b = listo().blob;
-        if (!b) return;
-        navigator.share({ files: [new File([b], nombre, { type: "image/png" })], title: "El Pets Festival 2026", text: texto || "Nos vemos en El Pets Festival · 12 y 13 de diciembre de 2026 · Parque Bicentenario, Quito · " + window.PFTarjeta.URL_PUBLICA })
-          .then(function () { est.textContent = ""; }, function (e) { est.textContent = e && e.name === "AbortError" ? "" : "No se pudo compartir. Descarga el sticker y súbelo desde tu galería."; });
+      if (vb) vb.addEventListener("click", function () {
+        if (vid.grabando) return;
+        if (vid.f && vid.k === clave()) { entregar(vid.f); return; }
+        var k = clave(); vid.grabando = true; vb.disabled = true; est.textContent = "Grabando tu video holográfico… 0 %";
+        T.exportarVideo(leer(), function (p) { est.textContent = "Grabando tu video holográfico… " + Math.round(p * 100) + " %"; }).then(function (r) {
+          vid.grabando = false; vb.disabled = false;
+          var fi = new File([r.blob], base + "-holografico." + r.ext, { type: r.type });
+          if (k !== clave()) { reiniciar(); est.textContent = "Cambiaste tu sticker: toca otra vez para grabar el nuevo."; return; }
+          vid.f = fi; vid.k = k;
+          if (G.puede(fi)) { ver(fi); vb.textContent = "Guardar video en mi teléfono"; est.textContent = "Tu video está listo: tócalo para guardarlo en Fotos o subirlo directo a tus historias."; }
+          else entregar(fi);
+        }, function () {
+          vid.grabando = false; vb.disabled = false;
+          est.textContent = "Este navegador no pudo grabar el video. Usa «Imagen del sticker».";
+        });
       });
     } };
   }
@@ -120,7 +152,7 @@
     if (sig) T.pintar(document.getElementById("feria-meta"), { tipo: "juego", nivel: nivel + 1, pisos: sig.min, perrito: perritoElegido, corona: r.corona, torre: r.torre });
     var a = acciones(), pie = document.getElementById("feria-pie");
     while (a.nodos.length) pie.appendChild(a.nodos[0]);
-    a.activar(function () { return d; }, texto);
+    a.activar(function () { return d; });
     document.getElementById("feria-otra").addEventListener("click", function () { jugar(reto); });
     document.getElementById("feria-estado").textContent = N_[nivel].nombre + ", " + r.pisos + " pisos. " + nota;
   }

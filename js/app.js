@@ -10,6 +10,17 @@
   var URL_PUBLICA = C.URL_PUBLICA || "https://elpetsfestivalquito.com/";
   var URL_CORTA = URL_PUBLICA.replace(/^https?:\/\//, "").replace(/\/$/, "");
 
+  /* guardar para historias: en el teléfono abre la hoja de compartir (Guardar en Fotos, Instagram, WhatsApp);
+     en computador descarga el archivo. Navegadores internos (Instagram, Facebook, TikTok) no guardan archivos: se avisa. */
+  window.PFGuardar = {
+    interno: /Instagram|FBAN|FBAV|FB_IAB|FBIOS|WhatsApp|Line\/|TikTok|musical_ly|BytedanceWebview/i.test(navigator.userAgent || ""),
+    movil: !!(window.matchMedia && matchMedia("(pointer: coarse)").matches),
+    puede: function (f) { try { return this.movil && !!(navigator.canShare && navigator.share && navigator.canShare({ files: [f] })); } catch (e) { return false; } },
+    compartir: function (f) { return navigator.share({ files: [f] }); },
+    bajar: function (f) { var u = URL.createObjectURL(f), a = document.createElement("a"); a.href = u; a.download = f.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(u); }, 60000); },
+    AVISO_INTERNO: "Estás dentro de Instagram, Facebook o TikTok: para guardar, abre esta página en Safari o Chrome (menú ··· › Abrir en el navegador)."
+  };
+
   /* 3) pase «Nos vemos aquí» */
   var lienzo = $("#lienzo"), fp = $("#form-pase"), vista = $("#pase-vista");
   if (lienzo && lienzo.getContext && fp) {
@@ -79,8 +90,9 @@
     };
     var pintar = function () {
       pendiente = false; if (listos !== true) return;
-      ajustar(); var ctx = lienzo.getContext("2d"); ctx.setTransform(lienzo.width / W, 0, 0, lienzo.height / H, 0, 0); dibujar(ctx); describir();
+      ajustar(); var ctx = lienzo.getContext("2d"); ctx.setTransform(lienzo.width / W, 0, 0, lienzo.height / H, 0, 0); dibujar(ctx); describir(); if (cambioPase) cambioPase();
     };
+    var cambioPase = null;
     var programar = function () { if (!pendiente) { pendiente = true; requestAnimationFrame(pintar); } };
     var avisarResumen; var anunciar = function () { clearTimeout(avisarResumen); avisarResumen = setTimeout(function () { if (resumen) resumen.textContent = describir(); }, 700); };
     var iniciar = function () {
@@ -138,31 +150,40 @@
       });
     };
     var avisoPase = function (m) { if (estadoPase) estadoPase.textContent = m || ""; };
-    var guardar = $("#pase-guardar"), guardarImg = null, urlGuardar = null;
-    var comp = $("#compartir"), puedeCompartir = false;
-    try { puedeCompartir = !!(navigator.canShare && window.File && navigator.canShare({ files: [new File(["x"], "x.png", { type: "image/png" })] })); } catch (e) { puedeCompartir = false; }
-    comp.hidden = !puedeCompartir; /* sin compartir archivos (navegadores internos): queda Descargar y mantener pulsada la imagen */
-    $("#descargar").addEventListener("click", function () {
+    var G = window.PFGuardar, guardar = $("#pase-guardar"), guardarImg = null, urlGuardar = null, comp = $("#compartir"), des = $("#descargar");
+    if (comp) comp.hidden = true; /* un solo botón: en el teléfono ya abre la hoja de compartir */
+    if (G.interno) avisoPase(G.AVISO_INTERNO);
+    /* el archivo se deja listo antes del toque: en iPhone la hoja de compartir tiene que salir directo del gesto */
+    var paseArch = null, paseTrab = null, paseN = 0, tPase = null;
+    var prepPase = function () {
+      var n = ++paseN; paseArch = null;
+      paseTrab = exportar().then(function (b) { var fi = new File([b], nombreArchivo(), { type: "image/png" }); if (n === paseN) paseArch = fi; return fi; });
+      paseTrab.catch(function () {}); return paseTrab;
+    };
+    cambioPase = function () { paseArch = null; paseTrab = null; clearTimeout(tPase); tPase = setTimeout(prepPase, 500); };
+    var verPase = function (fi) {
+      if (!guardar) return;
+      if (!guardarImg) { guardarImg = new Image(); guardarImg.alt = "Tu pase listo para guardar"; guardarImg.width = 240; guardarImg.height = 427; guardar.insertBefore(guardarImg, guardar.firstChild); }
+      if (urlGuardar) URL.revokeObjectURL(urlGuardar);
+      urlGuardar = URL.createObjectURL(fi); guardarImg.src = urlGuardar; guardar.hidden = false;
+    };
+    var entregarPase = function (fi) {
+      if (G.puede(fi)) {
+        G.compartir(fi).then(function () { avisoPase(""); }, function (e) {
+          if (e && e.name === "AbortError") { avisoPase(""); return; }
+          G.bajar(fi); verPase(fi); avisoPase("Listo. Si no se guardó, mantén pulsada la imagen de abajo y elige «Guardar en Fotos».");
+        });
+      } else {
+        G.bajar(fi); verPase(fi);
+        avisoPase(G.interno ? G.AVISO_INTERNO : "Listo: tu pase se descargó como imagen PNG. En el teléfono también puedes mantener pulsada la imagen de abajo para guardarla.");
+      }
+    };
+    des.addEventListener("click", function () {
+      if (paseArch) { entregarPase(paseArch); return; }
       avisoPase("Preparando tu pase…");
-      exportar().then(function (b) {
-        var url = URL.createObjectURL(b), a = document.createElement("a"); a.href = url; a.download = nombreArchivo(); document.body.appendChild(a); a.click(); a.remove();
-        if (!puedeCompartir && guardar) {
-          if (!guardarImg) { guardarImg = new Image(); guardarImg.alt = "Tu pase listo para guardar"; guardarImg.width = 240; guardarImg.height = 427; guardar.insertBefore(guardarImg, guardar.firstChild); }
-          if (urlGuardar) URL.revokeObjectURL(urlGuardar);
-          urlGuardar = url; guardarImg.src = url; guardar.hidden = false;
-          avisoPase("Listo. Si tu navegador no lo descargó, mantén pulsada la imagen de abajo para guardarla.");
-        } else { setTimeout(function () { URL.revokeObjectURL(url); }, 4000); avisoPase("Listo: tu pase se descargó."); }
-      }, function () { avisoPase("No se pudo preparar el pase. Inténtalo otra vez."); });
-    });
-    comp.addEventListener("click", function () {
-      avisoPase("Preparando tu pase…");
-      exportar().then(function (b) {
-        var arch = new File([b], nombreArchivo(), { type: "image/png" });
-        return navigator.share({ files: [arch], title: "El Pets Festival 2026", text: "Nos vemos en El Pets Festival · 12 y 13 de diciembre de 2026 · Parque Bicentenario, Quito · " + URL_PUBLICA })
-          .then(function () { avisoPase(""); }, function (e) {
-            if (e && e.name === "AbortError") avisoPase(""); /* la persona canceló: no es un error */
-            else avisoPase("No se pudo compartir. Descarga el pase y súbelo desde tu galería.");
-          });
+      (paseTrab || prepPase()).then(function (fi) {
+        if (G.puede(fi)) avisoPase("Tu pase está listo: toca «Guardar mi pase» otra vez para guardarlo en Fotos o subirlo a tus historias.");
+        else entregarPase(fi);
       }, function () { avisoPase("No se pudo preparar el pase. Inténtalo otra vez."); });
     });
   }

@@ -106,7 +106,7 @@
     }
     if (el.tagName === "BUTTON") {
       var id = el.id;
-      var nombre = id === "abrir-video" ? "ClicVideo" : id === "descargar" ? "PaseDescargar" : id === "compartir" ? "PaseCompartir" : id === "feria-descargar" ? "TarjetaDescargar" : id === "feria-compartir" ? "TarjetaCompartir" : "ClicBoton";
+      var nombre = id === "abrir-video" ? "ClicVideo" : id === "descargar" ? "PaseDescargar" : id === "compartir" ? "PaseCompartir" : id === "feria-descargar" ? "TarjetaDescargar" : id === "feria-compartir" ? "TarjetaCompartir" : id === "feria-video" ? "TarjetaVideo" : "ClicBoton";
       window.fbq("trackCustom", nombre, datos);
       return;
     }

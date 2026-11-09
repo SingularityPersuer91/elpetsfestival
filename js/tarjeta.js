@@ -1,4 +1,4 @@
-/* Stickers holográficos de La Feria. Se dibujan en el teléfono y se descargan como imagen 1080×1920.
+/* Stickers holográficos de La Feria. Se dibujan en el teléfono y se guardan como video holográfico (MP4, 6 s) o imagen, ambos 1080×1920 para historias.
    Diseño original del festival: foil con los colores de la marca, sin datos personales ni servidor. */
 (function () {
   var W = 1080, H = 1920;
@@ -171,12 +171,15 @@
     ctx.fillStyle = K; ctx.beginPath(); ctx.arc(ix + 122, iy + 122, 106, 0, Math.PI * 2); ctx.fill();
     if (logo.naturalWidth) { var lw = 168, lh = lw * logo.naturalHeight / logo.naturalWidth; ctx.drawImage(logo, ix + 122 - lw / 2, iy + 122 - lh / 2, lw, lh); }
   }
-  function dibujar(ctx, d) {
-    var t = d.tipo === "plan" ? (TEMAS[d.motivo] || TEMAS["Comida típica"]) : NIVELES[d.nivel];
+  function tema(d) { return d.tipo === "plan" ? (TEMAS[d.motivo] || TEMAS["Comida típica"]) : NIVELES[d.nivel]; }
+  /* capa: sin valor = todo; "fondo" = sin la lámina; "sticker" = solo la lámina sobre transparente (para el video) */
+  function dibujar(ctx, d, capa) {
+    var t = tema(d);
+    if (capa === "sticker") { ctx.save(); ctx.translate(W / 2, 910); ctx.rotate(-.022); sticker(ctx, d, t); ctx.restore(); return; }
     ctx.fillStyle = N; ctx.fillRect(0, 0, W, H);
     rayos(ctx, W / 2, 900, 1700, 40, t.rayos);
     ctx.fillStyle = N; ctx.fillRect(0, 0, W, 196); ctx.fillRect(0, 1660, W, H - 1660);
-    ctx.save(); ctx.translate(W / 2, 910); ctx.rotate(-.022); sticker(ctx, d, t); ctx.restore();
+    if (capa !== "fondo") { ctx.save(); ctx.translate(W / 2, 910); ctx.rotate(-.022); sticker(ctx, d, t); ctx.restore(); }
     [[86, 130, 26, M], [996, 110, 20, K], [64, 1800, 18, K], [1016, 1790, 26, M]].forEach(function (s) { destello(ctx, s[0], s[1], s[2], s[3]); });
     var sp = function (v) { if ("letterSpacing" in ctx) ctx.letterSpacing = v; };
     ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
@@ -185,8 +188,72 @@
     ctx.fillStyle = M; ctx.font = fu(TXT, 34, 800); ctx.fillText(URL_CORTA, W / 2, 1782);
     ctx.fillStyle = K; ctx.font = fu(TXT, 26, 700); sp("4px"); ctx.fillText("ESTO NO ES TU ENTRADA", W / 2, 1838); sp("0px");
   }
+  /* video: MP4 donde el navegador lo graba (iPhone, Chrome reciente); si no, WebM */
+  function tipoVideo() {
+    if (!window.MediaRecorder || !MediaRecorder.isTypeSupported || !HTMLCanvasElement.prototype.captureStream) return null;
+    var ops = ["video/mp4;codecs=avc1.42E01F", "video/mp4;codecs=avc1", "video/mp4", "video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"];
+    for (var i = 0; i < ops.length; i++) { try { if (MediaRecorder.isTypeSupported(ops[i])) return ops[i]; } catch (e) { /* nada */ } }
+    return null;
+  }
+  function lienzo() { var c = document.createElement("canvas"); c.width = W; c.height = H; return c; }
+  var DUR = 6000, CX = W / 2, CY = 910;
+  /* un cuadro: fondo fijo, lámina que se inclina y respira, brillo de foil que la cruza y destellos que titilan.
+     p va de 0 a 1 y el cuadro final es igual al inicial, así el video se repite sin salto */
+  function cuadro(ctx, sx, fondo, st, p) {
+    var a = Math.sin(p * 2 * Math.PI), b = Math.cos(p * 2 * Math.PI);
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1;
+    ctx.drawImage(fondo, 0, 0);
+    var e = 1 - .04 * Math.abs(a), k = .028 * a, dd = 1 + .008 * b;
+    sx.setTransform(1, 0, 0, 1, 0, 0); sx.globalCompositeOperation = "source-over"; sx.clearRect(0, 0, W, H);
+    sx.setTransform(e, k, 0, dd, CX - e * CX, CY - k * CX - dd * CY + 10 * a); sx.drawImage(st, 0, 0);
+    sx.setTransform(1, 0, 0, 1, 0, 0); sx.globalCompositeOperation = "source-atop";
+    var pos = .5 + .8 * a, cl = function (v) { return Math.max(0, Math.min(1, v)); };
+    var g = sx.createLinearGradient(90, 225, 990, 1595);
+    g.addColorStop(cl(pos - .22), "rgba(255,244,224,0)"); g.addColorStop(cl(pos - .09), "rgba(255,244,224,.62)");
+    g.addColorStop(cl(pos), "rgba(61,190,147,.42)"); g.addColorStop(cl(pos + .09), "rgba(242,179,61,.52)"); g.addColorStop(cl(pos + .22), "rgba(242,179,61,0)");
+    sx.fillStyle = g; sx.fillRect(0, 0, W, H);
+    var g2 = sx.createLinearGradient(990, 225, 90, 1595), q = .5 - .7 * b;
+    g2.addColorStop(cl(q - .3), "rgba(180,71,42,0)"); g2.addColorStop(cl(q), "rgba(255,255,255,.16)"); g2.addColorStop(cl(q + .3), "rgba(180,71,42,0)");
+    sx.fillStyle = g2; sx.fillRect(0, 0, W, H);
+    ctx.drawImage(sx.canvas, 0, 0);
+    [[150, 330, 30, 0, M], [935, 300, 24, .3, K], [120, 1180, 22, .55, K], [965, 1330, 32, .15, M], [800, 1560, 20, .7, K], [300, 1600, 18, .85, M]].forEach(function (s) {
+      var f = .5 + .5 * Math.sin((p * 2 + s[3]) * 2 * Math.PI); if (f < .15) return;
+      ctx.globalAlpha = f; destello(ctx, s[0], s[1], s[2] * (.6 + .5 * f), s[4]); ctx.globalAlpha = 1;
+    });
+  }
+  function exportarVideo(d, avance) {
+    var tipo = tipoVideo(); if (!tipo) return Promise.reject(new Error("sin video"));
+    return preparar().then(function () {
+      var fondo = lienzo(), st = lienzo(), c = lienzo(), S = lienzo();
+      dibujar(fondo.getContext("2d"), d, "fondo"); dibujar(st.getContext("2d"), d, "sticker");
+      var ctx = c.getContext("2d"), sx = S.getContext("2d");
+      cuadro(ctx, sx, fondo, st, 0);
+      return new Promise(function (ok, mal) {
+        var flujo, rec, trozos = [], fin = false;
+        try { flujo = c.captureStream(30); rec = new MediaRecorder(flujo, { mimeType: tipo, videoBitsPerSecond: 9000000 }); } catch (e) { mal(e); return; }
+        var limpiar = function () { try { flujo.getTracks().forEach(function (t) { t.stop(); }); } catch (e) { /* nada */ } [fondo, st, c, S].forEach(function (x) { x.width = x.height = 0; }); };
+        rec.ondataavailable = function (ev) { if (ev.data && ev.data.size) trozos.push(ev.data); };
+        rec.onerror = function (ev) { limpiar(); mal(ev.error || new Error("grabación")); };
+        rec.onstop = function () {
+          var mime = tipo.split(";")[0], b = new Blob(trozos, { type: mime }); limpiar();
+          if (b.size > 20000) ok({ blob: b, type: mime, ext: mime === "video/mp4" ? "mp4" : "webm" }); else mal(new Error("video vacío"));
+        };
+        rec.start(250);
+        var t0 = performance.now();
+        (function paso() {
+          if (fin) return;
+          var ms = performance.now() - t0;
+          if (ms >= DUR) { fin = true; cuadro(ctx, sx, fondo, st, 1); if (avance) avance(1); setTimeout(function () { try { rec.stop(); } catch (e) { mal(e); } }, 150); return; }
+          cuadro(ctx, sx, fondo, st, ms / DUR); if (avance) avance(ms / DUR);
+          requestAnimationFrame(paso);
+        })();
+      });
+    });
+  }
   window.PFTarjeta = {
     PERROS: PERROS,
+    tipoVideo: tipoVideo,
+    exportarVideo: exportarVideo,
     NIVELES: NIVELES,
     imagen: function (n) { return perros[n]; },
     nivelDe: function (p) { var r = 0; NIVELES.forEach(function (x, i) { if (p >= x.min) r = i; }); return r; },

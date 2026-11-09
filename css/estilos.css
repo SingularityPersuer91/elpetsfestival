@@ -660,7 +660,8 @@ details > p { margin: 0; padding: 0 0 var(--e5); max-width: 60ch; }
 .feria__grupo input:focus-visible + span { outline: 2px solid var(--canela); outline-offset: 2px; }
 .feria__acciones { display: grid; gap: var(--e2); margin-top: var(--e4); }
 .feria__acciones .boton { width: 100%; }
-.feria__guardar { margin-top: var(--e3); text-align: center; } .feria__guardar img { width: 216px; height: auto; margin-inline: auto; }
+.feria__guardar { margin-top: var(--e3); text-align: center; } .feria__guardar img, .feria__guardar video { display: block; width: 216px; height: auto; aspect-ratio: 9 / 16; margin-inline: auto; background: var(--carbon); }
+.feria__aviso { margin: var(--e2) 0 0; font-size: .875rem; line-height: 1.4; }
 .feria__fin { text-align: center; } .feria__rango { margin: 0; font: 800 clamp(2rem, 1.6rem + 1.6vw, 3rem)/1 var(--titulo); color: var(--canela); }
 .cuch { display: grid; justify-items: center; gap: var(--e3); }
 .cuch__marco { width: min(100%, 400px, calc((100dvh - 260px) * .692)); min-width: 240px; border: 3px solid var(--carbon); border-radius: 2px; }
