@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="es-EC">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Atrapa la Yapa · Zona de juegos · El Pets Festival</title>
+<meta name="description" content="Atrapa la Yapa: atrapa comida, notas y regalos al ritmo de los artistas de El Pets Festival. 12 y 13 de diciembre, Parque Bicentenario, Quito.">
+<meta name="theme-color" content="#231A15">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="icon" href="../assets/iconos/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../assets/iconos/apple-touch-icon.png">
+<link rel="preload" href="../assets/fuentes/bricolage-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fuentes/figtree-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../ritmo/style.css">
+<link rel="stylesheet" href="yapa.css">
+</head>
+<body>
+<img class="picado picado-izq" src="../assets/papel-picado.svg" alt="" aria-hidden="true">
+<img class="picado picado-der" src="../assets/papel-picado.svg" alt="" aria-hidden="true">
+
+<!-- INICIO -->
+<section id="inicio" class="pantalla activa" aria-labelledby="titulo">
+  <a class="volver-zona" href="../" data-zona>← Zona de juegos</a>
+  <header class="cabecera">
+    <img class="logo" src="../assets/logo-480.webp" width="480" height="502" alt="El Pets Festival Gastronómico · La Yapa de Quito">
+    <div class="cabecera-texto">
+      <h1 id="titulo">Atrapa la Yapa</h1>
+      <p class="bajada">Mueve el plato y atrapa todo lo rico que cae al ritmo de la música. Tienes 38 segundos.</p>
+    </div>
+  </header>
+  <ul class="leyenda" aria-label="Qué atrapar">
+    <li><span class="ico" data-icono="empanada"></span><span class="ico" data-icono="choclo"></span><span class="ico" data-icono="helado"></span><b>Comida</b><em>+10</em></li>
+    <li><span class="ico" data-icono="nota"></span><b>Nota</b><em>+15</em></li>
+    <li><span class="ico" data-icono="hueso"></span><b>Huesito</b><em>+20</em></li>
+    <li class="dorado"><span class="ico" data-icono="regalo"></span><b>¡La yapa!</b><em>puntos ×2</em></li>
+    <li class="pica"><span class="ico" data-icono="aji"></span><b>¡Ojo con el ají!</b><em>pica: −30</em></li>
+  </ul>
+  <div class="arranque">
+    <button type="button" class="boton boton-grande" id="jugar">¡Jugar!</button>
+    <p class="record-inicio" id="record-inicio"></p>
+  </div>
+  <footer class="promo">
+    <p class="promo-precio"><span>Entradas</span> <strong>solo $5</strong></p>
+    <p class="promo-dato">Sábado 12 y domingo 13 de diciembre · 09:00 a 21:00 · Parque Bicentenario, Quito</p>
+    <a class="boton boton-compra promo-boton" data-entradas href="https://www.meet2go.com/ev/elpetsfestivaluio">Compra tu entrada</a>
+    <div class="franja" data-franja></div>
+  </footer>
+</section>
+
+<!-- CARGA -->
+<section id="carga" class="pantalla" aria-live="polite">
+  <div class="carga-caja">
+    <img class="sena-gira" src="../assets/sena.png" width="96" height="96" alt="">
+    <p id="carga-texto">Preparando la yapa…</p>
+  </div>
+</section>
+
+<!-- JUEGO -->
+<section id="juego" class="pantalla" aria-label="Juego">
+  <canvas id="lienzo" aria-label="Mueve el plato con el dedo o con las flechas para atrapar lo que cae."></canvas>
+  <div class="hud">
+    <div class="progreso"><span id="barra"></span></div>
+    <div class="hud-fila">
+      <button type="button" class="boton-pausa" id="boton-pausa" aria-label="Pausa"><span></span><span></span></button>
+      <div class="hud-tema"><strong>Atrapa la Yapa</strong><span id="hud-cancion"></span></div>
+      <div class="hud-puntaje"><span class="etq">Puntos</span><strong id="hud-puntos">0</strong></div>
+    </div>
+  </div>
+  <aside class="lado lado-izq" aria-hidden="true">
+    <img id="lado-img" src="../assets/artistas/ghetto.webp" width="720" height="529" alt="">
+    <p class="lado-tema"><strong id="lado-artista"></strong><span id="lado-cancion"></span></p>
+    <p class="lado-dia" id="lado-dia"></p>
+  </aside>
+  <aside class="lado lado-der" aria-label="Entradas">
+    <p class="lado-precio">Entradas <strong>solo $5</strong></p>
+    <p class="lado-dato">Sábado 12 y domingo 13 de diciembre<br>Parque Bicentenario, Quito</p>
+    <img class="lado-qr" src="../assets/qr_entradas_web.png" data-qr-entradas width="333" height="333" alt="Código QR para comprar la entrada en Meet2Go">
+    <p class="lado-qr-txt">Escanea y compra tu entrada</p>
+    <div class="franja" data-franja></div>
+  </aside>
+  <div id="cuenta" class="cuenta" aria-live="assertive"></div>
+  <p id="ayuda" class="ayuda">Mueve el plato con el dedo</p>
+</section>
+
+<!-- PAUSA -->
+<section id="pausa" class="pantalla capa" aria-labelledby="t-pausa">
+  <div class="tarjeta">
+    <h2 id="t-pausa">Pausa</h2>
+    <button type="button" class="boton" id="seguir">Seguir jugando</button>
+    <a class="boton secundario" href="../" data-zona>Salir a la zona de juegos</a>
+  </div>
+</section>
+
+<!-- RESULTADO -->
+<section id="resultado" class="pantalla" aria-labelledby="t-resultado">
+  <div class="resultado-col">
+    <div class="tarjeta resultado-tarjeta">
+      <p class="res-tema" id="res-tema"></p>
+      <h2 id="t-resultado">¡Bien ahí!</h2>
+      <p class="res-puntos"><strong id="res-puntos">0</strong> puntos</p>
+      <a class="res-premio" id="res-premio" href="#premio" hidden></a>
+      <dl class="res-datos">
+        <div><dt>Atrapados</dt><dd id="res-atrapados">0</dd></div>
+        <div><dt>Combo máximo</dt><dd id="res-combo">0</dd></div>
+        <div><dt>Yapas</dt><dd id="res-yapas">0</dd></div>
+        <div><dt>Ajíes</dt><dd id="res-ajies">0</dd></div>
+        <div><dt>Puntería</dt><dd id="res-punteria">0 %</dd></div>
+        <div><dt>Tu récord</dt><dd id="res-record-num">0</dd></div>
+      </dl>
+      <p class="res-record" id="res-record" hidden>¡Nuevo récord!</p>
+      <div class="res-botones">
+        <button type="button" class="boton" id="otra-vez">Jugar otra vez</button>
+        <a class="boton secundario" href="../" data-zona>Más juegos</a>
+      </div>
+    </div>
+    <section class="tarjeta premio-tarjeta" id="premio" aria-label="Tu premio: sticker holográfico"></section>
+
+    <aside class="tarjeta entrada" aria-label="Entradas">
+      <img class="entrada-logo" src="../assets/logo-240.webp" width="240" height="251" alt="El Pets Festival">
+      <div class="entrada-texto">
+        <p class="entrada-precio">Entradas <strong>solo $5</strong></p>
+        <p class="entrada-dato"><strong>Sábado 12 y domingo 13 de diciembre</strong><br>Parque Bicentenario, Quito</p>
+        <a class="boton boton-compra" data-entradas href="https://www.meet2go.com/ev/elpetsfestivaluio">Compra tu entrada</a>
+      </div>
+      <figure class="qr">
+        <img src="../assets/qr_entradas_web.png" data-qr-entradas width="333" height="333" alt="Código QR para comprar la entrada en Meet2Go">
+        <figcaption>Escanea y compra tu entrada</figcaption>
+      </figure>
+      <div class="franja" data-franja></div>
+    </aside>
+  </div>
+</section>
+
+<script src="../config.js"></script>
+<script src="../comun.js"></script>
+<script src="../sticker.js"></script>
+<script src="yapa.js"></script>
+</body>
+</html>

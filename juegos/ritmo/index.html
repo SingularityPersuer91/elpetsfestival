@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="es-EC">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Sigue el ritmo · Zona de juegos · El Pets Festival</title>
+<meta name="description" content="Juego de ritmo de El Pets Festival: toca al ritmo de I.N.R.I, EMPICCCCC, Jammal Sánchez y GHETTO WARRIOR. 12 y 13 de diciembre, Parque Bicentenario, Quito.">
+<meta name="theme-color" content="#231A15">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="icon" href="../assets/iconos/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../assets/iconos/apple-touch-icon.png">
+<link rel="preload" href="../assets/fuentes/bricolage-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fuentes/figtree-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<img class="picado picado-izq" src="../assets/papel-picado.svg" alt="" aria-hidden="true">
+<img class="picado picado-der" src="../assets/papel-picado.svg" alt="" aria-hidden="true">
+
+<!-- INICIO -->
+<section id="inicio" class="pantalla activa" aria-labelledby="titulo">
+  <a class="volver-zona" href="../" data-zona>← Zona de juegos</a>
+  <header class="cabecera">
+    <img class="logo" src="../assets/logo-480.webp" width="480" height="502" alt="El Pets Festival Gastronómico · La Yapa de Quito">
+    <div class="cabecera-texto">
+      <h1 id="titulo">Sigue el ritmo</h1>
+      <p class="bajada">Elige a tu artista y toca cada nota cuando llegue al círculo.</p>
+    </div>
+  </header>
+
+  <div class="controles">
+    <div class="segmento" role="radiogroup" aria-label="Dificultad">
+      <button type="button" role="radio" aria-checked="true" data-dif="facil">Fácil</button>
+      <button type="button" role="radio" aria-checked="false" data-dif="normal">Normal</button>
+    </div>
+    <button type="button" class="enlace" id="abrir-calibrar">¿El ritmo se siente corrido? Ajústalo</button>
+  </div>
+
+  <div id="dias"></div>
+
+  <footer class="promo">
+    <p class="promo-precio"><span>Entradas</span> <strong>solo $5</strong></p>
+    <p class="promo-dato">Sábado 12 y domingo 13 de diciembre · 09:00 a 21:00 · Parque Bicentenario, Quito</p>
+    <div class="franja" data-franja></div>
+  </footer>
+</section>
+
+<!-- CARGA -->
+<section id="carga" class="pantalla" aria-live="polite">
+  <div class="carga-caja">
+    <img class="sena-gira" src="../assets/sena.png" width="96" height="96" alt="">
+    <p id="carga-texto">Cargando la canción…</p>
+  </div>
+</section>
+
+<!-- JUEGO -->
+<section id="juego" class="pantalla" aria-label="Juego">
+  <canvas id="lienzo" aria-label="Carriles del juego. Toca cada carril cuando la nota llegue al círculo."></canvas>
+  <div class="hud">
+    <div class="progreso"><span id="barra"></span></div>
+    <div class="hud-fila">
+      <button type="button" class="boton-pausa" id="boton-pausa" aria-label="Pausa"><span></span><span></span></button>
+      <div class="hud-tema"><strong id="hud-artista"></strong><span id="hud-cancion"></span></div>
+      <div class="hud-puntaje"><span class="etq">Puntos</span><strong id="hud-puntos">0</strong></div>
+    </div>
+  </div>
+  <aside class="lado lado-izq" aria-hidden="true">
+    <img id="lado-img" src="../assets/artistas/inri.webp" width="720" height="529" alt="">
+    <p class="lado-tema"><strong id="lado-artista"></strong><span id="lado-cancion"></span></p>
+    <p class="lado-dia" id="lado-dia"></p>
+  </aside>
+  <aside class="lado lado-der" aria-label="Entradas">
+    <p class="lado-precio">Entradas <strong>solo $5</strong></p>
+    <p class="lado-dato">Sábado 12 y domingo 13 de diciembre<br>Parque Bicentenario, Quito</p>
+    <img class="lado-qr" src="../assets/qr_entradas_web.png" data-qr-entradas width="333" height="333" alt="Código QR para comprar la entrada en Meet2Go">
+    <p class="lado-qr-txt">Escanea y compra tu entrada</p>
+    <div class="franja" data-franja></div>
+  </aside>
+  <div id="cuenta" class="cuenta" aria-live="assertive"></div>
+  <p id="ayuda" class="ayuda">Toca el carril cuando la nota llegue al círculo</p>
+</section>
+
+<!-- PAUSA -->
+<section id="pausa" class="pantalla capa" aria-labelledby="t-pausa">
+  <div class="tarjeta">
+    <h2 id="t-pausa">Pausa</h2>
+    <button type="button" class="boton" id="seguir">Seguir jugando</button>
+    <button type="button" class="boton secundario" id="salir">Elegir otro artista</button>
+  </div>
+</section>
+
+<!-- RESULTADO -->
+<section id="resultado" class="pantalla" aria-labelledby="t-resultado">
+  <div class="resultado-col">
+    <div class="tarjeta resultado-tarjeta">
+      <p class="res-tema" id="res-tema"></p>
+      <div class="estrellas" id="estrellas" aria-hidden="true"></div>
+      <h2 id="t-resultado">¡Buen ritmo!</h2>
+      <p class="res-puntos"><strong id="res-puntos">0</strong> puntos</p>
+      <a class="res-premio" id="res-premio" href="#premio" hidden></a>
+      <dl class="res-datos">
+        <div><dt>Precisión</dt><dd id="res-precision">0 %</dd></div>
+        <div><dt>Combo máximo</dt><dd id="res-combo">0</dd></div>
+        <div><dt>Perfectos</dt><dd id="res-perfectos">0</dd></div>
+        <div><dt>Bien</dt><dd id="res-bien">0</dd></div>
+        <div><dt>Casi</dt><dd id="res-casi">0</dd></div>
+        <div><dt>Fallos</dt><dd id="res-fallos">0</dd></div>
+      </dl>
+      <div class="res-botones">
+        <button type="button" class="boton" id="otra-vez">Jugar otra vez</button>
+        <button type="button" class="boton secundario" id="volver">Elegir artista</button>
+        <a class="boton secundario" href="../" data-zona>Más juegos</a>
+      </div>
+      <p class="res-record" id="res-record" hidden>¡Nuevo récord!</p>
+    </div>
+
+    <section class="tarjeta premio-tarjeta" id="premio" aria-label="Tu premio: sticker holográfico"></section>
+
+    <aside class="tarjeta entrada" aria-label="Entradas">
+      <img class="entrada-logo" src="../assets/logo-240.webp" width="240" height="251" alt="El Pets Festival">
+      <div class="entrada-texto">
+        <p class="entrada-precio">Entradas <strong>solo $5</strong></p>
+        <p class="entrada-dato"><strong>Sábado 12 y domingo 13 de diciembre</strong><br>Parque Bicentenario, Quito</p>
+        <a class="boton boton-compra" id="comprar" href="https://www.meet2go.com/ev/elpetsfestivaluio" data-entradas target="_blank" rel="noopener">Compra tu entrada</a>
+      </div>
+      <figure class="qr">
+        <img src="../assets/qr_entradas_web.png" data-qr-entradas width="333" height="333" alt="Código QR para comprar la entrada en Meet2Go">
+        <figcaption>Escanea y compra tu entrada</figcaption>
+      </figure>
+      <div class="franja" data-franja></div>
+    </aside>
+  </div>
+</section>
+
+<!-- CALIBRAR -->
+<section id="calibrar" class="pantalla capa" aria-labelledby="t-calibrar">
+  <div class="tarjeta calibrar-tarjeta">
+    <h2 id="t-calibrar">Ajustar el ritmo</h2>
+    <p>Sirve si el juego se siente adelantado o atrasado (por ejemplo, con un parlante Bluetooth). Toca el círculo cada vez que suene el golpe.</p>
+    <button type="button" class="metronomo" id="metronomo" aria-label="Toca aquí con cada golpe"><span id="metro-texto">Empezar</span></button>
+    <p id="calib-resultado" class="calib-resultado" aria-live="polite"></p>
+    <label class="deslizador">Ajuste fino: <output id="ajuste-valor">0 ms</output>
+      <input type="range" id="ajuste" min="-200" max="200" step="5" value="0">
+    </label>
+    <button type="button" class="boton" id="cerrar-calibrar">Listo</button>
+  </div>
+</section>
+
+<script src="../config.js"></script>
+<script src="../comun.js"></script>
+<script src="../sticker.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+{
+ "evento": "El Pets Festival",
+ "canciones": [
+  {
+   "id": "inri",
+   "artista": "I.N.R.I",
+   "cancion": "Quito (con EMPICCCCC)",
+   "dia": "sabado",
+   "duracion_s": 74.7,
+   "bpm": 89.88,
+   "audio": "audio/inri.mp3",
+   "chart": "charts/inri.json",
+   "imagen": "../assets/artistas/inri.webp"
+  },
+  {
+   "id": "empicc",
+   "artista": "EMPICCCCC",
+   "cancion": "Dejemos que la vibra fluya",
+   "dia": "sabado",
+   "duracion_s": 78.1,
+   "bpm": 86.13,
+   "audio": "audio/empicc.mp3",
+   "chart": "charts/empicc.json",
+   "imagen": "../assets/artistas/empicc.webp"
+  },
+  {
+   "id": "jammal",
+   "artista": "Jammal Sánchez",
+   "cancion": "Tu llamada",
+   "dia": "domingo",
+   "duracion_s": 40.6,
+   "bpm": 86.86,
+   "audio": "audio/jammal.mp3",
+   "chart": "charts/jammal.json",
+   "imagen": "../assets/artistas/jammal.webp"
+  },
+  {
+   "id": "ghetto",
+   "artista": "GHETTO WARRIOR",
+   "cancion": "Donde",
+   "dia": "domingo",
+   "duracion_s": 78.4,
+   "bpm": 97.51,
+   "audio": "audio/ghetto.mp3",
+   "chart": "charts/ghetto.json",
+   "imagen": "../assets/artistas/ghetto.webp"
+  }
+ ]
+}
