@@ -11,7 +11,9 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="Zona de juegos · El Pets Festival">
 <meta property="og:description" content="Juega al ritmo de la Yapa, reta a tus panas y vente al festival el 12 y 13 de diciembre. Entradas solo $5.">
-<meta property="og:image" content="https://elpetsfestivalquito.com/juegos/assets/video/yapa.jpg">
+<meta property="og:image" content="https://elpetsfestivalquito.com/juegos/assets/og-juegos.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta property="og:url" content="https://elpetsfestivalquito.com/juegos/">
 <link rel="canonical" href="https://elpetsfestivalquito.com/juegos/">
 <link rel="manifest" href="manifest.webmanifest">
@@ -19,6 +21,7 @@
 <link rel="apple-touch-icon" href="assets/iconos/apple-touch-icon.png">
 <link rel="preload" href="assets/fuentes/bricolage-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fuentes/figtree-var.woff2" as="font" type="font/woff2" crossorigin>
+<script>document.documentElement.classList.add("js")</script>
 <link rel="stylesheet" href="hub.css">
 </head>
 <body>
@@ -26,7 +29,7 @@
 <!-- ======================= PÁGINA (vista normal) ======================= -->
 <div class="pro">
   <header class="barra" id="barra">
-    <a class="barra-marca" href="#inicio" aria-label="Zona de juegos, inicio"><img src="assets/logo-240.webp" width="240" height="251" alt=""><span>Zona de <b>juegos</b></span></a>
+    <a class="barra-marca" href="#inicio" aria-label="Zona de juegos, inicio"><img data-rol="logo" src="assets/logo-240.webp" width="240" height="251" alt=""><span>Zona de <b>juegos</b></span></a>
     <nav class="barra-nav" aria-label="Páginas del festival"><a href="../">Entradas</a><a href="../carpas.html">Carpas</a><a href="../canino.html"><span class="corto">Canino</span><span class="largo">Festival canino</span></a><a href="./" aria-current="page">Juegos</a></nav>
     <a class="barra-cta" data-entradas href="https://www.meet2go.com/ev/elpetsfestivaluio">Entradas <b>$5</b></a>
   </header>
@@ -37,10 +40,10 @@
       <div class="hero-grid">
         <div class="hero-texto">
           <p class="ceja"><span class="punto" aria-hidden="true"></span>El Pets Festival · 12 y 13 de diciembre · Quito</p>
-          <h1 id="t-hero">Juega al ritmo <span>de la</span> <em>Yapa</em></h1>
+          <h1 id="t-hero" data-rol="titular">Juega al ritmo <span>de la</span> <em>Yapa</em></h1>
           <p class="hero-bajada">Dos juegos con la música de I.N.R.I, EMPICCCCC, Jammal Sánchez y GHETTO WARRIOR. Gratis, en tu celular y sin instalar nada. Gana stickers holográficos para tus historias.</p>
           <div class="hero-botones">
-            <a class="btn btn-primario" href="#juegos">Jugar ahora</a>
+            <a class="btn btn-primario" href="#juegos" data-rol="cta">Jugar ahora</a>
             <a class="btn btn-fantasma" data-entradas href="https://www.meet2go.com/ev/elpetsfestivaluio">Entradas · solo $5</a>
           </div>
           <ul class="hero-datos" aria-label="En cifras">
@@ -119,15 +122,15 @@
     <section class="seccion reta" id="premios" aria-labelledby="t-reta">
       <div class="reta-grid">
         <div class="revela">
-          <header class="seccion-cabeza izq"><p class="ceja">Premios</p><h2 id="t-reta">Gana tu sticker holográfico y reta a tus panas</h2></header>
+          <header class="seccion-cabeza izq"><p class="ceja">Premios</p><h2 id="t-reta">Gana tu sticker holográfico</h2><p class="seccion-bajada">Y reta a tus panas a superarte.</p></header>
           <ol class="pasos">
-            <li><span class="num">1</span><div><h3>Juega una ronda</h3><p>Dura menos de un minuto. Mientras mejor juegas, más alto llegas.</p></div></li>
+            <li><span class="num">1</span><div><h3>Juega una ronda</h3><p>Dura cerca de un minuto. Mientras mejor juegas, más alto llegas.</p></div></li>
             <li><span class="num">2</span><div><h3>Gana tu sticker</h3><p>Seis niveles, de «Yapa en camino» a «Yapa Legendaria». Guárdalo como video holográfico o imagen para tus historias.</p></div></li>
             <li><span class="num">3</span><div><h3>Reta a tus panas</h3><p>Mándales el reto por WhatsApp: «¿Me ganas?». Y nos vemos el 12 y 13 de diciembre en el Parque Bicentenario.</p></div></li>
           </ol>
         </div>
         <figure class="reta-tarjeta revela" data-sticker-muestra>
-          <figcaption>Así se ve un premio: «Cucharón de Oro». Inclínalo.</figcaption>
+          <figcaption>Así se ve un premio: «Cucharón de Oro». Pasa el dedo o el mouse por encima.</figcaption>
         </figure>
       </div>
       <h3 class="niveles-titulo revela">Los 6 niveles</h3>
@@ -167,7 +170,7 @@
   <div class="zona">
     <header class="a-hero">
       <img class="logo-salta" src="assets/logo-480.webp" width="480" height="502" alt="El Pets Festival Gastronómico · La Yapa de Quito">
-      <h1 class="titulo"><span>¡Zona de</span> <strong>juegos!</strong></h1>
+      <h2 class="titulo"><span>¡Zona de</span> <strong>juegos!</strong></h2>
     </header>
     <div class="cinta a-cinta" aria-hidden="true"><div class="cinta-mov"></div></div>
     <div class="a-juegos">

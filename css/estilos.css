@@ -484,6 +484,7 @@ details > p { margin: 0; padding: 0 0 var(--e5); max-width: 60ch; }
 .barra .boton--chico { display: none; }
 .barra__nombre { display: none; }
 @media (min-width: 600px) { .paginas .largo { display: inline; } .paginas .corto { display: none; } .paginas a { padding: 0 14px; font-size: .9375rem; } }
+@media (max-width: 359px) { .paginas a { padding: 0 6px; font-size: .8125rem; } }   /* cuatro pestañas a 320 px */
 @media (min-width: 900px) { .barra .boton--chico { display: inline-flex; margin-left: var(--e5); } }
 @media (min-width: 1100px) { .barra__nombre { display: block; } }
 

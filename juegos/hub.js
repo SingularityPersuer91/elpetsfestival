@@ -11,7 +11,7 @@
   $$("[data-url-juegos]").forEach((e) => { e.textContent = CFG.urlJuegosCorta; });
 
   // cinta con el cartel
-  const piezas = ["I.N.R.I", "EMPICCCCC", "JAMMAL SÁNCHEZ", "GHETTO WARRIOR", "12 Y 13 DE DICIEMBRE", "PARQUE BICENTENARIO", "ENTRADAS SOLO $5"];
+  const piezas = ["I.N.R.I", "EMPICCCCC", "Jammal Sánchez", "GHETTO WARRIOR", "12 Y 13 DE DICIEMBRE", "PARQUE BICENTENARIO", "ENTRADAS SOLO $5"];
   const una = piezas.map((p) => `<span>${p}</span><span class="estrella">★</span>`).join("");
   $$(".cinta-mov").forEach((c) => { c.innerHTML = una + una + una + una; });
 
@@ -33,9 +33,10 @@
   // videos: solo corren cuando se ven (ahorra batería y datos)
   const ioV = new IntersectionObserver((es) => es.forEach((e) => {
     const v = e.target;
-    if (e.isIntersecting) { if (v.preload === "none") v.preload = "auto"; v.play().catch(() => {}); } else v.pause();
+    if (e.isIntersecting && !quieto) { if (v.preload === "none") v.preload = "auto"; v.play().catch(() => {}); } else v.pause();
   }), { threshold: 0.25 });
-  $$("video").forEach((v) => { v.muted = true; ioV.observe(v); });
+  // con «reducir movimiento» los videos no corren: queda el póster
+  $$("video").forEach((v) => { v.muted = true; if (quieto) { v.autoplay = false; v.removeAttribute("autoplay"); v.pause(); } ioV.observe(v); });
 
   // el cartel, desde la lista de canciones del juego
   fetch("ritmo/canciones.json").then((r) => r.json()).then((m) => {
@@ -75,7 +76,9 @@
   };
   const nueva = (i, alAzar) => {
     const z = 0.35 + Math.random() * 0.65;
-    return { img: imgs[i % imgs.length], x: Math.random() * W, y: alAzar ? Math.random() * H : -60, z, tam: 22 + z * 34, v: 18 + z * 46, giro: Math.random() * 6, vg: (Math.random() - 0.5) * 1.2 };
+    // en pantallas anchas caen solo por la mitad derecha, para no pasar detrás del texto
+    const x = W >= 980 ? W * 0.52 + Math.random() * W * 0.48 : Math.random() * W;
+    return { img: imgs[i % imgs.length], x, y: alAzar ? Math.random() * H : -60, z, tam: 22 + z * 34, v: 18 + z * 46, giro: Math.random() * 6, vg: (Math.random() - 0.5) * 1.2 };
   };
   const anim = (t) => {
     const dt = Math.min(0.05, (t - ultimo) / 1000); ultimo = t;
@@ -84,7 +87,7 @@
       piezasF.forEach((p, i) => {
         p.y += p.v * dt; p.giro += p.vg * dt;
         if (p.y > H + 60) piezasF[i] = nueva(i, false);
-        cx.globalAlpha = 0.18 + p.z * 0.32;
+        cx.globalAlpha = W >= 980 ? 0.18 + p.z * 0.32 : 0.1 + p.z * 0.18;
         cx.save(); cx.translate(p.x, p.y); cx.rotate(p.giro); if (p.img.complete) cx.drawImage(p.img, -p.tam / 2, -p.tam / 2, p.tam, p.tam); cx.restore();
       });
       cx.globalAlpha = 1;
@@ -108,7 +111,7 @@
       o.disconnect();
       S.pintar(muestra.querySelector("canvas"), { juego: "yapa", nivel: 3, puntos: 2150 });
       $$(".niveles canvas").forEach((cv, i) => S.pintar(cv, { juego: i % 2 ? "ritmo" : "yapa", nivel: i, puntos: [380, 760, 1420, 2150, 3080, 3920][i],
-        precision: [0.35, 0.48, 0.63, 0.76, 0.86, 0.96][i], perrito: S.PERROS[i % S.PERROS.length] }, true));
+        precision: [0.35, 0.48, 0.63, 0.76, 0.86, 0.96][i] }, true));   // el perrito va por nivel, igual que en el premio
     }, { rootMargin: "400px" }).observe($("#premios"));
   }
 

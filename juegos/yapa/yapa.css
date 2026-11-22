@@ -5,12 +5,12 @@ h1 { text-shadow: 3px 3px 0 var(--canela), 6px 6px 0 rgba(0,0,0,.35); }
 .leyenda li b { font-family: "Bricolage", sans-serif; font-size: 1.1rem; flex: 1; }
 .leyenda li em { font-style: normal; font-weight: 800; color: var(--mostaza); }
 .leyenda li.dorado { border-color: var(--mostaza); box-shadow: 0 0 0 3px rgba(242,179,61,.18); }
-.leyenda li.pica { border-color: #E0412B; }
-.leyenda li.pica em { color: #F07A5F; }
+.leyenda li.pica { border-color: var(--canela); }
+.leyenda li.pica em { color: var(--crema); }
 .ico { width: 40px; height: 40px; display: inline-block; flex: none; }
 .ico svg { width: 100%; height: 100%; display: block; }
 .arranque { text-align: center; margin-top: 18px; }
-.boton-grande { max-width: 360px; margin: 0 auto; font-size: 1.5rem; min-height: 66px; font-family: "Bricolage", sans-serif;
+.boton-grande { max-width: 360px; margin: 0 auto; font-size: 1.5rem; min-height: 66px; font-family: "Figtree", sans-serif; font-weight: 700;
   box-shadow: 0 6px 0 #9C6A12, 0 10px 30px rgba(242,179,61,.35); animation: latido 1.1s ease-in-out infinite; }
 .boton-grande:active { transform: translateY(4px); box-shadow: 0 2px 0 #9C6A12; }
 @keyframes latido { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }

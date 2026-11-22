@@ -11,10 +11,10 @@
   const ESPERA = 2.4;
   const $ = (s) => document.querySelector(s);
   const TIPOS = {
-    empanada: { pts: 10, bueno: true, color: "#F2B33D" }, choclo: { pts: 10, bueno: true, color: "#F6C945" },
+    empanada: { pts: 10, bueno: true, color: "#F2B33D" }, choclo: { pts: 10, bueno: true, color: "#F2B33D" },
     helado: { pts: 10, bueno: true, color: "#FFF4E0" }, nota: { pts: 15, bueno: true, color: "#FFF4E0" },
     hueso: { pts: 20, bueno: true, color: "#FFF4E0" }, regalo: { pts: 50, bueno: true, color: "#F2B33D" },
-    aji: { pts: -30, bueno: false, color: "#E0412B" }
+    aji: { pts: -30, bueno: false, color: "#B4472A" }
   };
   const FRASES = ["¡Chévere!", "¡Qué rico!", "¡De ley!", "¡Full yapa!", "¡Sabroso!"];
   const CONFETI = ["#B4472A", "#F2B33D", "#3DBE93", "#FFF4E0"];
@@ -33,7 +33,7 @@
       ctx = new AC({ latencyHint: "interactive" });
       try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch (e) { /* iOS antiguo */ }
     }
-    if (ctx.state === "suspended") ctx.resume();
+    if (ctx.state !== "running") { try { const r = ctx.resume(); if (r && r.catch) r.catch(() => {}); } catch (e) { /* iOS al volver de compartir */ } }
     return ctx;
   }
   function relojOido() {
@@ -85,6 +85,7 @@
 
   /* ---------------- ronda ---------------- */
   const J = { estado: "inicio" };
+  P.volverSiInactivo(() => J.estado === "jugando" || J.estado === "resultado");
   let G = null;
   const lienzo = $("#lienzo"), c2 = lienzo.getContext("2d");
 
@@ -113,6 +114,19 @@
     }
     return plan.sort((a, b) => a.ts - b.ts);
   }
+  // puntaje máximo posible de la ronda (atrapar todo lo bueno y esquivar los ajíes): el nivel del premio se mide contra esto.
+  // Es un techo: cada cosa se atrapa entre el 97 y el 108 % de su caída, así que cuenta como doble si puede caer dentro de alguna yapa.
+  function maxRonda(plan) {
+    const buenos = plan.filter((p) => TIPOS[p.tipo].bueno && p.ts + 0.97 * p.caida < RONDA).sort((a, b) => a.tl - b.tl);
+    const regalos = buenos.filter((p) => p.tipo === "regalo").map((p) => [p.ts + 0.97 * p.caida, p.ts + 1.08 * p.caida]);
+    let combo = 0, pts = 0;
+    buenos.forEach((p) => {
+      const i0 = p.ts + 0.97 * p.caida, i1 = p.ts + 1.08 * p.caida, mult = Math.min(5, 1 + Math.floor(++combo / 6));
+      const doble = regalos.some(([r0, r1]) => (p.tipo === "regalo" ? r0 < i0 : i1 >= r0) && i0 < r1 + 6);
+      pts += TIPOS[p.tipo].pts * mult * (doble ? 2 : 1);
+    });
+    return Math.max(pts, 1);
+  }
 
   async function empezarRonda() {
     audio();
@@ -134,6 +148,7 @@
       yapaHasta: -1e9, pica: -1e9, sacudir: 0, textos: [], particulas: [], frase: null, tVisual: -ESPERA, ultimoPerf: performance.now(),
       cuentaMostrada: null, terminado: false, periodo: 60 / chart.bpm, primerPulso: chart.primer_pulso_ms / 1000, ang: 0, dts: []
     });
+    J.max = maxRonda(J.plan);
     $("#hud-cancion").textContent = `Suena: ${c.artista} · ${c.cancion}`; $("#hud-puntos").textContent = "0";
     $("#lado-img").src = "../" + c.imagen.replace(/^\.\.\//, ""); $("#lado-artista").textContent = c.artista; $("#lado-cancion").textContent = c.cancion;
     $("#lado-dia").textContent = c.dia === "sabado" ? "Sábado 12 de diciembre" : "Domingo 13 de diciembre";
@@ -200,8 +215,8 @@
     const x = G.x0 + it.x * G.fw, y = G.yPlato - G.r * 0.4;
     if (it.tipo === "aji") {
       J.puntos = Math.max(0, J.puntos + TIPOS.aji.pts); J.combo = 0; J.mult = 1; J.pica = t + 0.8; J.sacudir = 14; J.ajies++;
-      J.textos.push({ txt: "¡PICA! −30", x, y: y - G.r, t0: performance.now(), color: "#F07A5F", grande: true });
-      chispas(x, y, ["#E0412B", "#F2B33D", "#FFF4E0"], 14); sonido.aji();
+      J.textos.push({ txt: "¡PICA! −30", x, y: y - G.r, t0: performance.now(), color: "#FFF4E0", grande: true });
+      chispas(x, y, ["#B4472A", "#F2B33D", "#FFF4E0"], 14); sonido.aji();
     } else {
       J.combo++; J.comboMax = Math.max(J.comboMax, J.combo); J.atrapados++;
       J.mult = Math.min(5, 1 + Math.floor(J.combo / 6));
@@ -281,7 +296,7 @@
     const resta = Math.max(0, Math.ceil(RONDA - Math.max(0, t)));
     c2.textAlign = "center"; c2.textBaseline = "middle";
     c2.font = `800 ${Math.round(Math.min(fw * 0.11, 54))}px Bricolage, sans-serif`;
-    c2.fillStyle = resta <= 5 && t > 0 ? "#F07A5F" : "rgba(255,244,224,.9)";
+    c2.fillStyle = resta <= 5 && t > 0 ? "#F2B33D" : "rgba(255,244,224,.9)";
     c2.fillText(`0:${String(resta).padStart(2, "0")}`, w / 2, yTop + 30);
     if (J.mult > 1 || enYapa) {
       const txt = `×${J.mult * (enYapa ? 2 : 1)}`;
@@ -313,7 +328,7 @@
       const ts = pw * 1.15;
       c2.save(); if (pica) { c2.translate(px, yPlato - ts * 0.35); c2.rotate(Math.sin(ahora / 40) * 0.15); c2.translate(-px, -(yPlato - ts * 0.35)); }
       c2.drawImage(sena, px - ts / 2, yPlato - ts * 0.85 - salto, ts, ts);
-      if (pica) { c2.globalAlpha = 0.45; c2.fillStyle = "#E0412B"; c2.beginPath(); c2.arc(px, yPlato - ts * 0.35 - salto, ts * 0.47, 0, Math.PI * 2); c2.fill(); c2.globalAlpha = 1; }
+      if (pica) { c2.globalAlpha = 0.45; c2.fillStyle = "#B4472A"; c2.beginPath(); c2.arc(px, yPlato - ts * 0.35 - salto, ts * 0.47, 0, Math.PI * 2); c2.fill(); c2.globalAlpha = 1; }
       c2.restore();
     }
     c2.fillStyle = "#6E2915"; c2.beginPath(); c2.ellipse(px, yPlato + r * 0.25, pw, r * 0.55, 0, 0, Math.PI * 2); c2.fill();
@@ -376,9 +391,11 @@
   function terminar() {
     J.terminado = true; J.estado = "resultado"; detener();
     const punteria = J.buenos ? J.atrapados / J.buenos : 0;
-    const titulo = punteria >= 0.9 ? "¡Maestro de la Yapa!" : punteria >= 0.7 ? "¡Qué buena mano!" : punteria >= 0.45 ? "¡Bien ahí!" : "¡Otra vez, que tú puedes!";
+    // titular y premio salen del mismo nivel (sticker.js: % del máximo posible de esta ronda)
+    const nivel = window.PetsSticker.nivelDe("yapa", window.PetsSticker.valorDe({ juego: "yapa", puntos: J.puntos, max: J.max }));
+    const titulo = ["¡Otra vez, que tú puedes!", "¡Bien ahí!", "¡Buena mano!", "¡Qué buena mano!", "¡Casi leyenda!", "¡Maestro de la Yapa!"][nivel];
     const reg = P.registrar("yapa", J.puntos);
-    J.resultado = { puntos: J.puntos, atrapados: J.atrapados, buenos: J.buenos, comboMax: J.comboMax, yapas: J.yapas, ajies: J.ajies, punteria, registro: reg };
+    J.resultado = { puntos: J.puntos, atrapados: J.atrapados, buenos: J.buenos, comboMax: J.comboMax, yapas: J.yapas, ajies: J.ajies, punteria, nivel, max: J.max, registro: reg };
     $("#res-tema").textContent = `Atrapa la Yapa · con ${J.cancion.artista}`;
     $("#t-resultado").textContent = titulo;
     $("#res-puntos").textContent = P.fmt(J.puntos);
@@ -387,8 +404,7 @@
     $("#res-record").hidden = !reg.nuevoRecord;
     mostrar("resultado"); pintarRecord();
     // premio: sticker holográfico de La Feria según el puntaje (sticker.js)
-    J.resultado.nivel = window.PetsSticker.nivelDe("yapa", J.puntos);
-    window.PetsSticker.montar($("#premio"), { juego: "yapa", nivel: J.resultado.nivel, puntos: J.puntos });
+    window.PetsSticker.montar($("#premio"), { juego: "yapa", nivel, puntos: J.puntos, max: J.max });
     // en el teléfono el premio queda más abajo: aviso arriba que lleva hasta él
     const rp = $("#res-premio"); rp.textContent = `Ganaste el sticker «${window.PetsSticker.NIVELES[J.resultado.nivel].nombre}» ↓`; rp.hidden = false;
     rp.onclick = (e) => { e.preventDefault(); $("#premio").scrollIntoView({ behavior: "smooth", block: "start" }); };

@@ -38,19 +38,26 @@
   function record(juego) { return Number(leer(`record_${juego}`, 0)) || 0; }
   function top(juego) {
     const t = leer(`top_${juego}`, null);
-    return t && t.dia === hoy() ? t.lista : [];
+    if (t && t.dia !== hoy()) { try { localStorage.removeItem(`pets_top_${juego}`); } catch (e) { /* sin almacenamiento */ } return []; }   // la tabla vencida se borra
+    return t ? t.lista : [];
   }
+  // la pantalla grande muestra 5 puestos por juego: solo se pide nombre a quien entra en esos 5
+  const PUESTOS = 5;
+  // iniciales que no van en una pantalla de colegio
+  const VETADAS = new Set(["PUT", "PTA", "PTO", "CUL", "MRD", "VRG", "VRN", "CAC", "FUC", "FCK", "SEX", "XXX", "KKK", "NAZ", "PIJ", "HDP", "CTM", "MMV"]);
+  const limpiarIniciales = (s) => { const v = String(s || "").toUpperCase().replace(/[^A-ZÑ]/g, "").slice(0, 3); return !v || VETADAS.has(v) ? "???" : v; };
+  // ?reiniciar=1 en la pantalla grande borra las tablas del día (al cambiar de colegio)
+  if (Q.has("reiniciar")) ["yapa", "ritmo"].forEach((j) => { try { localStorage.removeItem(`pets_top_${j}`); } catch (e) { /* sin almacenamiento */ } });
   function registrar(juego, puntos) {
     const antes = record(juego), nuevo = puntos > antes;
     if (nuevo) guardar(`record_${juego}`, puntos);
     const lista = top(juego);
-    const puesto = lista.length < 10 || puntos > lista[lista.length - 1].puntos
-      ? lista.filter((x) => x.puntos >= puntos).length + 1 : null;
+    const lugar = lista.filter((x) => x.puntos >= puntos).length + 1, puesto = lugar <= PUESTOS ? lugar : null;
     return { nuevoRecord: nuevo && puntos > 0, record: Math.max(antes, puntos), puesto: puntos > 0 ? puesto : null };
   }
   function agregarTop(juego, iniciales, puntos) {
     const lista = top(juego);
-    lista.push({ ini: (iniciales || "???").toUpperCase().slice(0, 3), puntos, t: Date.now() });
+    lista.push({ ini: limpiarIniciales(iniciales), puntos, t: Date.now() });
     lista.sort((a, b) => b.puntos - a.puntos || a.t - b.t);
     guardar(`top_${juego}`, { dia: hoy(), lista: lista.slice(0, 10) });
   }
@@ -68,7 +75,9 @@
 .pets-modal input:focus{outline:none;border-color:#F2B33D}
 .pets-modal .fila{display:flex;gap:10px;margin-top:14px}
 .pets-modal button{flex:1;min-height:52px;border-radius:999px;border:0;font:800 1.05rem Figtree,sans-serif;cursor:pointer}
-.pets-modal .ok{background:#F2B33D;color:#231A15}.pets-modal .no{background:transparent;color:#FFF4E0;border:2px solid rgba(255,244,224,.4)}`;
+.pets-modal .ok{background:#F2B33D;color:#231A15}.pets-modal .no{background:transparent;color:#FFF4E0;border:2px solid rgba(255,244,224,.4)}
+.pets-aviso-interno{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:70;display:flex;gap:10px;align-items:center;background:#F2B33D;color:#231A15;border-radius:16px;padding:12px 14px;font:700 .95rem/1.3 Figtree,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.pets-aviso-interno p{margin:0;flex:1}.pets-aviso-interno button{flex:none;width:44px;height:44px;border:0;border-radius:50%;background:#231A15;color:#FFF4E0;font-size:1.4rem;cursor:pointer}`;
     document.head.appendChild(s);
   }
   function pedirIniciales(puesto, puntos) {
@@ -90,16 +99,37 @@
     });
   }
 
-  /* ---------- íconos planos (paleta Canelazo) para Atrapa la Yapa y la portada ---------- */
+  /* ---------- aviso para navegadores internos (Instagram, Facebook, WhatsApp, TikTok): ahí no se puede guardar el sticker ---------- */
+  const INTERNO = /Instagram|FBAN|FBAV|FB_IAB|FBIOS|WhatsApp|Line\/|TikTok|musical_ly|BytedanceWebview/i.test(navigator.userAgent || "");
+  function avisoInterno() {
+    if (!INTERNO || Q.has("activacion") || Q.has("kiosco") || CFG.kiosco || !document.body) return;
+    estilos();
+    const d = document.createElement("div"); d.className = "pets-aviso-interno"; d.setAttribute("role", "status");
+    d.innerHTML = '<p>Para guardar tu sticker de premio, abre esta página en Safari o Chrome: menú ··· › Abrir en el navegador.</p><button type="button" aria-label="Cerrar aviso">×</button>';
+    d.querySelector("button").onclick = () => d.remove();
+    document.body.appendChild(d);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", avisoInterno); else avisoInterno();
+
+  /* ---------- pantalla grande: si un juego queda abierto sin uso (inicio, pausa, ajuste), vuelve sola a la zona ---------- */
+  function volverSiInactivo(ocupado, segundos = 60) {
+    if (!Q.has("activacion")) return;
+    let tm = null;
+    const armar = () => { clearTimeout(tm); tm = setTimeout(() => { if (ocupado && ocupado()) { armar(); return; } location.href = BASE + "?activacion=1"; }, segundos * 1000); };
+    ["pointerdown", "keydown", "touchstart"].forEach((e) => addEventListener(e, armar, { passive: true }));
+    armar();
+  }
+
+  /* ---------- íconos planos (paleta Canelazo, sin contorno, como la ilustración I2 del manual) ---------- */
   const NS = 'xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"';
   const ICONOS = {
-    empanada: `<svg ${NS}><path d="M8 64 A42 42 0 0 1 92 64 Z" fill="#F2B33D" stroke="#B4472A" stroke-width="5" stroke-linejoin="round"/><path d="M15 62 A35 35 0 0 1 85 62" fill="none" stroke="#C9852A" stroke-width="7" stroke-dasharray="1.5 9" stroke-linecap="round"/><path d="M32 44 Q40 35 51 34" stroke="#FFF4E0" stroke-width="5" fill="none" stroke-linecap="round" opacity=".75"/></svg>`,
-    choclo: `<svg ${NS}><path d="M50 8 C68 8 72 40 66 70 C62 86 38 86 34 70 C28 40 32 8 50 8Z" fill="#F6C945" stroke="#B4472A" stroke-width="4"/><path d="M40 22h20M37 34h26M36 46h28M36 58h28M38 70h24M45 12v70M55 12v70" stroke="#D9A21E" stroke-width="3"/><path d="M34 70 C20 60 16 40 22 28 C30 52 38 62 50 94 Z" fill="#3DBE93" stroke="#1F6E53" stroke-width="3" stroke-linejoin="round"/><path d="M66 70 C80 60 84 40 78 28 C70 52 62 62 50 94 Z" fill="#3DBE93" stroke="#1F6E53" stroke-width="3" stroke-linejoin="round"/></svg>`,
-    helado: `<svg ${NS}><path d="M30 48 L50 95 L70 48 Z" fill="#D9A066" stroke="#8A5A2B" stroke-width="4" stroke-linejoin="round"/><path d="M36 52l24 22M64 52l-24 22M42 70l14 0" stroke="#8A5A2B" stroke-width="2.5"/><circle cx="50" cy="40" r="22" fill="#FFF4E0" stroke="#B9A88C" stroke-width="4"/><circle cx="50" cy="21" r="13" fill="#B4472A" stroke="#6E2915" stroke-width="3"/><circle cx="43" cy="33" r="4" fill="#fff" opacity=".85"/></svg>`,
+    empanada: `<svg ${NS}><path d="M8 66 A42 42 0 0 1 92 66 Z" fill="#F2B33D"/><path d="M8 66 A42 42 0 0 1 92 66 L83 66 A33 33 0 0 0 17 66 Z" fill="#B4472A" opacity=".5"/><ellipse cx="40" cy="47" rx="11" ry="4.5" transform="rotate(-24 40 47)" fill="#FFF4E0" opacity=".75"/></svg>`,
+    choclo: `<svg ${NS}><path d="M34 70 C20 60 16 40 22 28 C30 52 38 62 50 94 Z" fill="#3DBE93"/><path d="M50 8 C68 8 72 40 66 70 C62 86 38 86 34 70 C28 40 32 8 50 8Z" fill="#F2B33D"/><g fill="#B4472A" opacity=".38"><circle cx="45" cy="22" r="3.4"/><circle cx="55" cy="22" r="3.4"/><circle cx="41" cy="34" r="3.6"/><circle cx="50" cy="34" r="3.6"/><circle cx="59" cy="34" r="3.6"/><circle cx="40" cy="47" r="3.8"/><circle cx="50" cy="47" r="3.8"/><circle cx="60" cy="47" r="3.8"/><circle cx="41" cy="60" r="3.8"/><circle cx="50" cy="60" r="3.8"/><circle cx="59" cy="60" r="3.8"/><circle cx="45" cy="72" r="3.4"/><circle cx="55" cy="72" r="3.4"/></g><path d="M66 70 C80 60 84 40 78 28 C70 52 62 62 50 94 Z" fill="#3DBE93"/><path d="M66 70 C80 60 84 40 78 28 C74 48 66 62 58 80 Z" fill="#231A15" opacity=".16"/></svg>`,
+    helado: `<svg ${NS}><path d="M30 48 L50 95 L70 48 Z" fill="#B4472A"/><path d="M39 52 L50 80 L61 52 Z" fill="#F2B33D" opacity=".3"/><circle cx="50" cy="40" r="22" fill="#FFF4E0"/><path d="M28 44 Q34 54 40 46 Q46 56 52 46 Q58 54 64 46 Q68 51 72 44 L72 40 L28 40 Z" fill="#F2B33D" opacity=".85"/><circle cx="50" cy="20" r="12" fill="#B4472A"/><circle cx="43" cy="32" r="4" fill="#FFF4E0" opacity=".9"/></svg>`,
     nota: `<svg ${NS}><circle cx="50" cy="50" r="47" fill="#F2B33D" opacity=".25"/><ellipse cx="38" cy="70" rx="16" ry="11.5" transform="rotate(-20 38 70)" fill="#FFF4E0"/><rect x="49" y="17" width="7.5" height="55" rx="2" fill="#FFF4E0"/><path d="M53 17 C67 25 80 31 75 54 C72 42 64 37 53 35Z" fill="#FFF4E0"/></svg>`,
-    hueso: `<svg ${NS}><g transform="rotate(-30 50 50)" fill="#FFF4E0"><rect x="26" y="42" width="48" height="16" rx="7"/><circle cx="25" cy="40" r="11.5"/><circle cx="25" cy="60" r="11.5"/><circle cx="75" cy="40" r="11.5"/><circle cx="75" cy="60" r="11.5"/></g><path d="M38 47 l24 -12" stroke="#B9A88C" stroke-width="3" stroke-linecap="round" opacity=".7"/></svg>`,
-    regalo: `<svg ${NS}><circle cx="50" cy="56" r="46" fill="#F2B33D" opacity=".28"/><rect x="18" y="42" width="64" height="48" rx="6" fill="#F2B33D" stroke="#9C6A12" stroke-width="4"/><rect x="13" y="31" width="74" height="16" rx="5" fill="#F7C95C" stroke="#9C6A12" stroke-width="4"/><rect x="44" y="31" width="12" height="59" fill="#B4472A"/><path d="M50 31 C36 9 20 21 33 31 Z M50 31 C64 9 80 21 67 31 Z" fill="#B4472A" stroke="#6E2915" stroke-width="3" stroke-linejoin="round"/><path d="M85 8l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" fill="#FFF4E0"/><path d="M12 62l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#FFF4E0"/></svg>`,
-    aji: `<svg ${NS}><path d="M58 22 C40 28 25 52 27 77 C28 89 36 93 41 84 C49 64 61 50 73 36 C77 29 69 19 58 22Z" fill="#E0412B" stroke="#8E1F12" stroke-width="4" stroke-linejoin="round"/><path d="M60 24 C62 13 70 7 79 9 C75 13 71 18 71 27 Z" fill="#3DBE93" stroke="#1F6E53" stroke-width="3" stroke-linejoin="round"/><path d="M41 46 C37 54 35 62 36 70" stroke="#fff" stroke-width="4" opacity=".55" fill="none" stroke-linecap="round"/></svg>`
+    hueso: `<svg ${NS}><g transform="rotate(-30 50 50)" fill="#FFF4E0"><rect x="26" y="42" width="48" height="16" rx="7"/><circle cx="25" cy="40" r="11.5"/><circle cx="25" cy="60" r="11.5"/><circle cx="75" cy="40" r="11.5"/><circle cx="75" cy="60" r="11.5"/></g></svg>`,
+    regalo: `<svg ${NS}><circle cx="50" cy="56" r="46" fill="#F2B33D" opacity=".28"/><rect x="18" y="42" width="64" height="48" rx="6" fill="#F2B33D"/><rect x="13" y="31" width="74" height="16" rx="5" fill="#F2B33D"/><rect x="13" y="44" width="74" height="4" fill="#231A15" opacity=".18"/><rect x="44" y="31" width="12" height="59" fill="#B4472A"/><path d="M50 31 C36 9 20 21 33 31 Z M50 31 C64 9 80 21 67 31 Z" fill="#B4472A"/><path d="M85 8l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" fill="#FFF4E0"/><path d="M12 62l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#FFF4E0"/></svg>`,
+    aji: `<svg ${NS}><path d="M58 22 C40 28 25 52 27 77 C28 89 36 93 41 84 C49 64 61 50 73 36 C77 29 69 19 58 22Z" fill="#B4472A"/><path d="M60 24 C62 13 70 7 79 9 C75 13 71 18 71 27 Z" fill="#3DBE93"/><path d="M41 46 C37 54 35 62 36 70 C39 62 41 56 45 48 Z" fill="#FFF4E0" opacity=".6"/></svg>`
   };
   const icono = (n) => ICONOS[n] || "";
   const iconoURL = (n) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(ICONOS[n] || "");
@@ -131,7 +161,7 @@
 
   window.Pets = {
     activacion: Q.has("activacion"), kiosco: !!CFG.kiosco || Q.has("kiosco") || Q.has("activacion"), base: BASE, fmt,
-    origen: ORIGEN, urlEntradas, marcas, franjaHTML, enlacesEntradas, record, top, registrar, agregarTop, pedirIniciales,
+    origen: ORIGEN, interno: INTERNO, urlEntradas, volverSiInactivo, marcas, franjaHTML, enlacesEntradas, record, top, registrar, agregarTop, pedirIniciales,
     volverZona: () => BASE + (Q.has("activacion") ? "?activacion=1" : ""), icono, iconoURL, retardo
   };
 })();

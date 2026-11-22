@@ -15,7 +15,7 @@
   const PUNTOS = { perfecto: 100, bien: 70, casi: 40 };
   const PESO = { perfecto: 1, bien: 0.7, casi: 0.4, fallo: 0 };
   const TEXTO = { perfecto: "¡PERFECTO!", bien: "¡BIEN!", casi: "CASI", fallo: "FALLO" };
-  const TEXTO_COLOR = { perfecto: "#F2B33D", bien: "#FFF4E0", casi: "#3DBE93", fallo: "#E0694A" };
+  const TEXTO_COLOR = { perfecto: "#F2B33D", bien: "#FFF4E0", casi: "#3DBE93", fallo: "rgba(255,244,224,.75)" };
   const W = { perfecto: CFG.ventanas.perfecto / 1000, bien: CFG.ventanas.bien / 1000, casi: CFG.ventanas.casi / 1000 };
   const GRACIA_VACIO = 0.25;   // un toque sin nota a menos de 250 ms corta el combo
   const GRACIA_FALLO = 0.08;   // espera extra antes de dar una nota por fallada: un toque a tiempo puede llegar tarde a la cola de eventos
@@ -39,7 +39,7 @@
       ctx = new AC({ latencyHint: "interactive" });
       try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch (e) { /* iOS antiguo */ }
     }
-    if (ctx.state === "suspended") ctx.resume();
+    if (ctx.state !== "running") { try { const r = ctx.resume(); if (r && r.catch) r.catch(() => {}); } catch (e) { /* iOS al volver de compartir */ } }
     return ctx;
   }
   // Instante del contexto que está sonando ahora por el parlante (descuenta la latencia de salida que informa el equipo).
@@ -140,6 +140,7 @@
 
   /* ---------------- estado del juego ---------------- */
   const J = { estado: "inicio" };
+  window.Pets.volverSiInactivo(() => J.estado === "jugando" || J.estado === "resultado");
   let G = null;           // geometría
   const lienzo = $("#lienzo"); const c2 = lienzo.getContext("2d");
   const sena = new Image(); sena.src = "../assets/sena.png";
@@ -383,6 +384,7 @@
       const x = xCarril(n.lane);
       c2.globalAlpha = n.estado === 2 ? 0.35 : Math.min(1, (y - yTop + r) / (r * 3));
       c2.beginPath(); c2.arc(x, y, r * 0.86, 0, Math.PI * 2); c2.fillStyle = BORDE[n.lane]; c2.fill();
+      c2.lineWidth = Math.max(2, r * 0.07); c2.strokeStyle = "rgba(255,244,224,.85)"; c2.stroke();   // filete crema: la nota se separa de la pista
       c2.beginPath(); c2.arc(x, y - 2, r * 0.74, 0, Math.PI * 2); c2.fillStyle = COLOR[n.lane]; c2.fill();
       c2.beginPath(); c2.arc(x - r * 0.25, y - r * 0.3, r * 0.16, 0, Math.PI * 2); c2.fillStyle = "rgba(255,255,255,.55)"; c2.fill();
     }
@@ -432,8 +434,10 @@
     J.terminado = true; J.estado = "resultado"; detenerFuente();
     const n = J.notas.length || 1, cn = J.conteo;
     const precision = (cn.perfecto * PESO.perfecto + cn.bien * PESO.bien + cn.casi * PESO.casi) / n;
-    const estrellas = precision >= 0.9 ? 3 : precision >= 0.75 ? 2 : precision >= 0.55 ? 1 : 0;
-    const titulo = ["¡Sigue practicando!", "¡Buen ritmo!", "¡Qué nivel!", "¡Estrella de la Yapa!"][estrellas];
+    // titular y estrellas salen del mismo nivel que el sticker de premio (sticker.js)
+    const nivel = window.PetsSticker.nivelDe("ritmo", Math.round(precision * 100));
+    const estrellas = nivel >= 5 ? 3 : nivel >= 3 ? 2 : nivel >= 2 ? 1 : 0;
+    const titulo = ["¡Sigue practicando!", "¡Buen comienzo!", "¡Buen ritmo!", "¡Qué nivel!", "¡Casi leyenda!", "¡Estrella de la Yapa!"][nivel];
     J.resultado = { precision, estrellas, puntos: J.puntos, comboMax: J.comboMax, conteo: { ...cn } };
     $("#res-tema").textContent = `${J.cancion.artista} · ${J.cancion.cancion} · ${dificultad === "facil" ? "Fácil" : "Normal"}`;
     $("#t-resultado").textContent = titulo;
@@ -517,12 +521,14 @@
     o.frequency.value = 1320; g.gain.setValueAtTime(0.0001, t);
     g.gain.exponentialRampToValueAtTime(0.7, t + 0.004); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
     o.connect(g); g.connect(ctx.destination); o.start(t); o.stop(t + 0.09);
+    return o;
   }
+  function pararClics() { if (calib && calib.osc) calib.osc.forEach((o) => { try { o.stop(); } catch (e) { /* ya sonó */ } }); }
   function calibrar() {
     audio();
     const p = 0.6, n = 12, t0 = ctx.currentTime + 1.0;
-    calib = { clics: [], toques: [], fin: t0 + n * p + 0.4 };
-    for (let i = 0; i < n; i++) { clic(t0 + i * p); calib.clics.push(t0 + i * p); }
+    calib = { clics: [], toques: [], osc: [], fin: t0 + n * p + 0.4 };
+    for (let i = 0; i < n; i++) { calib.osc.push(clic(t0 + i * p)); calib.clics.push(t0 + i * p); }
     $("#metro-texto").textContent = "Toca con el golpe";
     $("#calib-resultado").textContent = "";
     const anim = () => {
@@ -550,14 +556,15 @@
     $("#calib-resultado").textContent = ajusteMs === 0 ? "¡Perfecto! El ritmo está bien." : `Listo: ajustamos ${Math.abs(ajusteMs)} ms.`;
     calib = null;
   }
-  $("#metronomo").addEventListener("pointerdown", (e) => {
-    e.preventDefault();
+  const tocarMetronomo = (e) => {
     if (!calib) { calibrar(); return; }
     calib.toques.push(relojDeEvento(e.timeStamp));
-  });
+  };
+  $("#metronomo").addEventListener("pointerdown", (e) => { e.preventDefault(); tocarMetronomo(e); });
+  $("#metronomo").addEventListener("click", (e) => { if (e.detail === 0) tocarMetronomo(e); });   // con teclado (Enter o espacio)
   $("#ajuste").addEventListener("input", (e) => { ajusteMs = Number(e.target.value); guardar("ajuste_ms", ajusteMs); mostrarAjuste(); });
   $("#abrir-calibrar").addEventListener("click", () => { mostrarAjuste(); mostrar("calibrar"); });
-  $("#cerrar-calibrar").addEventListener("click", () => { calib = null; mostrar("inicio"); });
+  $("#cerrar-calibrar").addEventListener("click", () => { pararClics(); calib = null; mostrar("inicio"); });
 
   /* ---------------- medición (pruebas) ---------------- */
   function conectarMedidor(fuente) {

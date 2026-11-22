@@ -5,7 +5,7 @@
 (() => {
   "use strict";
   const P = window.Pets, CFG = window.PETS_CONFIG;
-  const W = 1080, H = 1920, CX = W / 2, CY = 910, DUR = 6000;
+  const W = 1080, H = 1920, CX = W / 2, CY = 880, LAM = 0.92, DUR = 6000, VS = 2 / 3;   // VS: el video sale a 720×1280 (más fluido en teléfonos)
   const C = "#B4472A", M = "#F2B33D", K = "#FFF4E0", N = "#231A15", V = "#3DBE93";
   const TIT = (t) => `800 ${t}px Bricolage, 'Bricolage Grotesque', 'Arial Black', sans-serif`;
   const TXT = (t, p) => `${p || 600} ${t}px Figtree, system-ui, sans-serif`;
@@ -20,13 +20,16 @@
     { nombre: "Maestro de la Olla", foil: [N, C, M, V, N, M, C, N], rayos: M, marca: C, borde: N, icono: "olla", gorro: "chef", reflejo: true },
     { nombre: "Yapa Legendaria", foil: [M, V, K, C, M, V, K, M], rayos: M, marca: C, borde: N, icono: "pata", gorro: "corona", reflejo: true, focos: true }
   ];
-  /* Atrapa la Yapa: puntos de la ronda (una ronda perfecta da unos 4.400). Sigue el ritmo: precisión en %. */
-  const UMBRALES = { yapa: [0, 500, 1000, 1800, 2700, 3600], ritmo: [0, 40, 55, 70, 82, 92] };
-  const JUEGOS = { yapa: { nombre: "Atrapa la Yapa", perrito: "perro_bully_babero" }, ritmo: { nombre: "Sigue el ritmo", perrito: "perro_mestizo_rescatado" } };
+  /* Atrapa la Yapa: % del máximo posible de ESA ronda (cada ronda trae otras cosas; así el nivel 6 siempre se puede ganar).
+     Sigue el ritmo: precisión en %. El perrito del sticker va por nivel (el mismo que muestra la galería de premios). */
+  const UMBRALES = { yapa: [0, 11, 23, 41, 61, 82], ritmo: [0, 40, 55, 70, 82, 92] };
+  const MAX_YAPA_TIPICO = 4400;
+  const JUEGOS = { yapa: { nombre: "Atrapa la Yapa" }, ritmo: { nombre: "Sigue el ritmo" } };
   const CABEZAS = { perro_bully_babero: [100, 42, 92], perro_chiquito_disfraz: [100, 84, 60], perro_mestizo_rescatado: [100, 46, 74], perro_peludo_grande: [100, 34, 86], perro_salchicha: [57, 74, 72] };
-  const valorDe = (d) => (d.juego === "ritmo" ? Math.round((d.precision || 0) * 100) : Math.round(d.puntos || 0));
+  const valorDe = (d) => (d.juego === "ritmo" ? Math.round((d.precision || 0) * 100) : Math.floor((100 * (d.puntos || 0)) / (d.max || MAX_YAPA_TIPICO)));
+  const puntosPara = (i, max) => Math.ceil(((UMBRALES.yapa[i] / 100) * (max || MAX_YAPA_TIPICO)) / 10) * 10;
   function nivelDe(juego, valor) { let r = 0; UMBRALES[juego].forEach((m, i) => { if (valor >= m) r = i; }); return r; }
-  const meta = (juego, i) => (juego === "ritmo" ? `${UMBRALES.ritmo[i]} % de precisión` : `${P.fmt(UMBRALES.yapa[i])} puntos`);
+  const meta = (juego, i) => (juego === "ritmo" ? `${UMBRALES.ritmo[i]} % de precisión` : `${UMBRALES.yapa[i]} % del máximo de la ronda`);
 
   /* ---------- carga (perritos de la web sin el fondo cuadrado, logo, marcas y fuentes) ---------- */
   const logo = new Image(), perros = {}, logos = [];
@@ -93,7 +96,7 @@
     if (!n) return;
     ctx.save(); ctx.lineWidth = 6; ctx.strokeStyle = N; ctx.lineJoin = "round";
     if (n === "chef") {
-      ctx.fillStyle = K; ctx.beginPath(); ctx.arc(x - w * 0.3, y - w * 0.42, w * 0.3, 0, Math.PI * 2); ctx.arc(x + w * 0.3, y - w * 0.42, w * 0.3, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = K; ctx.beginPath(); ctx.arc(x - w * 0.3, y - w * 0.42, w * 0.3, 0, Math.PI * 2); ctx.moveTo(x + w * 0.6, y - w * 0.42); ctx.arc(x + w * 0.3, y - w * 0.42, w * 0.3, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
       ctx.beginPath(); ctx.arc(x, y - w * 0.56, w * 0.36, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
       ctx.fillRect(x - w * 0.44, y - w * 0.34, w * 0.88, w * 0.4); ctx.strokeRect(x - w * 0.44, y - w * 0.08, w * 0.88, w * 0.16); ctx.fillRect(x - w * 0.41, y - w * 0.36, w * 0.82, w * 0.3);
     } else if (n === "lazo") {
@@ -145,7 +148,7 @@
     ctx.save(); ctx.beginPath(); ctx.arc(0, cy, r, 0, Math.PI * 2); ctx.clip(); rayos(ctx, 0, cy, r, 28, "rgba(242,179,61,.4)");
     [[-222, cy - 196], [226, cy - 186], [-246, cy + 150], [246, cy + 142]].forEach((q, i) => { icono(ctx, t.icono, q[0], q[1], i % 2 ? 1.25 : 1.05, t.marca, K); });
     ctx.restore();
-    const pn = d.perrito || (JUEGOS[d.juego] || JUEGOS.yapa).perrito, p = perros[pn] || perros[PERROS[0]], cb = CABEZAS[pn] || CABEZAS[PERROS[0]];
+    const pn = d.perrito || PERROS[(d.nivel || 0) % PERROS.length], p = perros[pn] || perros[PERROS[0]], cb = CABEZAS[pn] || CABEZAS[PERROS[0]];
     if (p && p.naturalWidth) { ctx.drawImage(p, -270, cy - 270, 540, 540); gorro(ctx, t.gorro, -270 + cb[0] * 2.7, cy - 270 + cb[1] * 2.7, cb[2] * 2.7); }
     [[-372, iy + 760, 34, K], [372, iy + 700, 26, K], [-352, iy + 300, 22, K], [356, iy + 200, 30, K]].forEach((s) => { destello(ctx, s[0], s[1], s[2], s[3]); });
     /* placa: juego, nivel, estrellas y resultado */
@@ -162,7 +165,7 @@
     /* escudo del festival, encima del foil */
     ctx.fillStyle = N; ctx.beginPath(); ctx.arc(ix + 122, iy + 122, 116, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = K; ctx.beginPath(); ctx.arc(ix + 122, iy + 122, 106, 0, Math.PI * 2); ctx.fill();
-    if (logo.naturalWidth) { const lw = 168, lh = lw * logo.naturalHeight / logo.naturalWidth; ctx.drawImage(logo, ix + 122 - lw / 2, iy + 122 - lh / 2, lw, lh); }
+    if (logo.naturalWidth) { const lw = 146, lh = lw * logo.naturalHeight / logo.naturalWidth; ctx.drawImage(logo, ix + 122 - lw / 2, iy + 122 - lh / 2, lw, lh); }
   }
   /* franja de marcas (la de la zona: sin Pilsener en la versión de colegios) */
   function franja(ctx, y, h) {
@@ -183,20 +186,28 @@
   /* capa: sin valor = todo; "fondo" = sin la lámina; "sticker" = solo la lámina sobre transparente (para el video) */
   function dibujar(ctx, d, capa) {
     const t = NIVELES[d.nivel] || NIVELES[0];
-    if (capa === "sticker") { ctx.save(); ctx.translate(CX, CY); ctx.rotate(-0.022); sticker(ctx, d, t); ctx.restore(); return; }
+    const lamina = () => { ctx.save(); ctx.translate(CX, CY); ctx.rotate(-0.022); ctx.scale(LAM, LAM); sticker(ctx, d, t); ctx.restore(); };
+    if (capa === "sticker") { lamina(); return; }
     ctx.fillStyle = N; ctx.fillRect(0, 0, W, H);
-    rayos(ctx, CX, 900, 1700, 40, t.rayos);
-    ctx.fillStyle = N; ctx.fillRect(0, 0, W, 196); ctx.fillRect(0, 1660, W, H - 1660);
-    if (capa !== "fondo") { ctx.save(); ctx.translate(CX, CY); ctx.rotate(-0.022); sticker(ctx, d, t); ctx.restore(); }
-    [[86, 130, 26, M], [996, 110, 20, K], [64, 1800, 18, K], [1016, 1790, 26, M]].forEach((s) => { destello(ctx, s[0], s[1], s[2], s[3]); });
+    rayos(ctx, CX, CY, 1700, 40, t.rayos);
+    ctx.fillStyle = N; ctx.fillRect(0, 0, W, 196); ctx.fillRect(0, 1566, W, H - 1566);
+    if (capa !== "fondo") lamina();
+    [[86, 130, 26, M], [996, 110, 20, K], [64, 1612, 18, K], [1016, 1600, 24, M]].forEach((s) => { destello(ctx, s[0], s[1], s[2], s[3]); });
     ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
-    ctx.fillStyle = K; ajustar(ctx, "Mi sticker de la Zona de Juegos", 58, 40, W - 220, TIT); ctx.fillText("Mi sticker de la Zona de Juegos", CX, 136);
-    ctx.fillStyle = K; ajustar(ctx, "Entradas solo $5 · 12 y 13 de diciembre", 44, 30, W - 160, (q) => TXT(q, 800)); ctx.fillText("Entradas solo $5 · 12 y 13 de diciembre", CX, 1714);
-    ctx.fillStyle = M; ajustar(ctx, "Parque Bicentenario · " + CFG.urlJuegosCorta, 32, 24, W - 160, (q) => TXT(q, 800)); ctx.fillText("Parque Bicentenario · " + CFG.urlJuegosCorta, CX, 1762);
-    franja(ctx, 1784, 82);
-    ctx.fillStyle = K; ctx.font = TXT(24, 700); sp(ctx, "4px"); ctx.fillText("ESTO NO ES TU ENTRADA", CX, 1902); sp(ctx, "0px");
+    ctx.fillStyle = K; ajustar(ctx, "Mi sticker de la Zona de juegos", 58, 40, W - 220, TIT); ctx.fillText("Mi sticker de la Zona de juegos", CX, 136);
+    /* precio bien grande (regla de José: «solo $5» en grande en toda pieza) */
+    ctx.textAlign = "left";
+    ctx.font = TIT(62); const wa = ctx.measureText("Entradas ").width; ctx.font = TIT(108); const wb = ctx.measureText("solo $5").width;
+    const xp = CX - (wa + wb) / 2;
+    ctx.fillStyle = K; ctx.font = TIT(62); ctx.fillText("Entradas ", xp, 1662);
+    ctx.fillStyle = M; ctx.font = TIT(108); ctx.fillText("solo $5", xp + wa, 1662);
+    ctx.textAlign = "center";
+    ctx.fillStyle = K; ajustar(ctx, "12 y 13 de diciembre · Parque Bicentenario", 38, 30, W - 140, (q) => TXT(q, 800)); ctx.fillText("12 y 13 de diciembre · Parque Bicentenario", CX, 1712);
+    ctx.fillStyle = M; ajustar(ctx, CFG.urlJuegosCorta, 36, 30, W - 140, (q) => TXT(q, 800)); ctx.fillText(CFG.urlJuegosCorta, CX, 1756);
+    ctx.fillStyle = K; ctx.font = TXT(28, 700); sp(ctx, "4px"); ctx.fillText("ESTO NO ES TU ENTRADA", CX, 1798); sp(ctx, "0px");
+    franja(ctx, 1814, 78);
   }
-  function lienzo() { const c = document.createElement("canvas"); c.width = W; c.height = H; return c; }
+  function lienzo(s) { const c = document.createElement("canvas"); c.width = Math.round(W * (s || 1)); c.height = Math.round(H * (s || 1)); return c; }
 
   /* video: MP4 donde el navegador lo graba (iPhone, Chrome reciente); si no, WebM */
   function tipoVideo() {
@@ -209,22 +220,23 @@
      p va de 0 a 1 y el cuadro final es igual al inicial, así el video se repite sin salto */
   function cuadro(ctx, sx, fondo, st, p) {
     const a = Math.sin(p * 2 * Math.PI), b = Math.cos(p * 2 * Math.PI);
-    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1;
+    ctx.setTransform(VS, 0, 0, VS, 0, 0); ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1;
     ctx.drawImage(fondo, 0, 0);
     const e = 1 - 0.04 * Math.abs(a), k = 0.028 * a, dd = 1 + 0.008 * b;
-    sx.setTransform(1, 0, 0, 1, 0, 0); sx.globalCompositeOperation = "source-over"; sx.clearRect(0, 0, W, H);
-    sx.setTransform(e, k, 0, dd, CX - e * CX, CY - k * CX - dd * CY + 10 * a); sx.drawImage(st, 0, 0);
-    sx.setTransform(1, 0, 0, 1, 0, 0); sx.globalCompositeOperation = "source-atop";
+    sx.setTransform(1, 0, 0, 1, 0, 0); sx.globalCompositeOperation = "source-over"; sx.clearRect(0, 0, sx.canvas.width, sx.canvas.height);
+    sx.setTransform(VS, 0, 0, VS, 0, 0); sx.transform(e, k, 0, dd, CX - e * CX, CY - k * CX - dd * CY + 10 * a); sx.drawImage(st, 0, 0);
+    sx.setTransform(VS, 0, 0, VS, 0, 0); sx.globalCompositeOperation = "source-atop";
     const pos = 0.5 + 0.8 * a, cl = (v) => Math.max(0, Math.min(1, v));
-    const g = sx.createLinearGradient(90, 225, 990, 1595);
+    const g = sx.createLinearGradient(110, 240, 970, 1530);
     g.addColorStop(cl(pos - 0.22), "rgba(255,244,224,0)"); g.addColorStop(cl(pos - 0.09), "rgba(255,244,224,.62)");
     g.addColorStop(cl(pos), "rgba(61,190,147,.42)"); g.addColorStop(cl(pos + 0.09), "rgba(242,179,61,.52)"); g.addColorStop(cl(pos + 0.22), "rgba(242,179,61,0)");
     sx.fillStyle = g; sx.fillRect(0, 0, W, H);
-    const g2 = sx.createLinearGradient(990, 225, 90, 1595), q = 0.5 - 0.7 * b;
+    const g2 = sx.createLinearGradient(970, 240, 110, 1530), q = 0.5 - 0.7 * b;
     g2.addColorStop(cl(q - 0.3), "rgba(180,71,42,0)"); g2.addColorStop(cl(q), "rgba(255,255,255,.16)"); g2.addColorStop(cl(q + 0.3), "rgba(180,71,42,0)");
     sx.fillStyle = g2; sx.fillRect(0, 0, W, H);
-    ctx.drawImage(sx.canvas, 0, 0);
-    [[150, 330, 30, 0, M], [935, 300, 24, 0.3, K], [120, 1180, 22, 0.55, K], [965, 1330, 32, 0.15, M], [800, 1560, 20, 0.7, K], [300, 1600, 18, 0.85, M]].forEach((s) => {
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(sx.canvas, 0, 0);
+    ctx.setTransform(VS, 0, 0, VS, 0, 0);
+    [[150, 330, 30, 0, M], [935, 300, 24, 0.3, K], [110, 1180, 22, 0.55, K], [975, 1330, 32, 0.15, M], [70, 1450, 20, 0.7, K], [1010, 1470, 18, 0.85, M]].forEach((s) => {
       const f = 0.5 + 0.5 * Math.sin((p * 2 + s[3]) * 2 * Math.PI); if (f < 0.15) return;
       ctx.globalAlpha = f; destello(ctx, s[0], s[1], s[2] * (0.6 + 0.5 * f), s[4]); ctx.globalAlpha = 1;
     });
@@ -232,13 +244,13 @@
   function exportarVideo(d, avance) {
     const tipo = tipoVideo(); if (!tipo) return Promise.reject(new Error("sin video"));
     return preparar().then(() => {
-      const fondo = lienzo(), st = lienzo(), c = lienzo(), S = lienzo();
+      const fondo = lienzo(), st = lienzo(), c = lienzo(VS), S = lienzo(VS);
       dibujar(fondo.getContext("2d"), d, "fondo"); dibujar(st.getContext("2d"), d, "sticker");
       const ctx = c.getContext("2d"), sx = S.getContext("2d");
       cuadro(ctx, sx, fondo, st, 0);
       return new Promise((ok, mal) => {
         let flujo, rec, fin = false; const trozos = [];
-        try { flujo = c.captureStream(30); rec = new MediaRecorder(flujo, { mimeType: tipo, videoBitsPerSecond: 9000000 }); } catch (e) { mal(e); return; }
+        try { flujo = c.captureStream(30); rec = new MediaRecorder(flujo, { mimeType: tipo, videoBitsPerSecond: 6000000 }); } catch (e) { mal(e); return; }
         const limpiar = () => { try { flujo.getTracks().forEach((t) => t.stop()); } catch (e) { /* nada */ } [fondo, st, c, S].forEach((x) => { x.width = x.height = 0; }); };
         rec.ondataavailable = (ev) => { if (ev.data && ev.data.size) trozos.push(ev.data); };
         rec.onerror = (ev) => { limpiar(); mal(ev.error || new Error("grabación")); };
@@ -268,7 +280,7 @@
   function pintar(cv, d, soloLamina) {
     return preparar().then(() => {
       const r = Math.min(window.devicePixelRatio || 1, 2), w = Math.round((cv.clientWidth || 260) * r);
-      const caja = soloLamina ? [70, 200, 940, 1430] : [0, 0, W, H];
+      const caja = soloLamina ? [96, 226, 888, 1326] : [0, 0, W, H];
       cv.width = w; cv.height = Math.round(w * caja[3] / caja[2]);
       const ctx = cv.getContext("2d"); ctx.setTransform(cv.width / caja[2], 0, 0, cv.height / caja[3], -caja[0] * cv.width / caja[2], -caja[1] * cv.height / caja[3]);
       if (soloLamina) dibujar(ctx, d, "sticker"); else dibujar(ctx, d);
@@ -289,7 +301,7 @@
     s.textContent = `
 .holo{position:relative;width:min(250px,64vw);margin:0 auto;overflow:hidden;border-radius:6px;transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform 160ms ease-out;touch-action:pan-y;box-shadow:0 18px 40px rgba(0,0,0,.45)}
 .holo canvas{display:block;width:100%;height:auto;aspect-ratio:9/16}
-.holo.lamina canvas{aspect-ratio:940/1430}
+.holo.lamina canvas{aspect-ratio:888/1326}
 .holo__brillo{position:absolute;inset:0;pointer-events:none;mix-blend-mode:color-dodge;opacity:.6;background:linear-gradient(115deg,transparent 32%,rgba(255,244,224,.75) 44%,rgba(61,190,147,.55) 51%,rgba(242,179,61,.65) 58%,transparent 70%) var(--bx,0%) var(--by,0%)/260% 260%;animation:pets-holo 3.8s ease-in-out infinite alternate}
 .holo--activo .holo__brillo{animation:none}
 @keyframes pets-holo{from{background-position:0% 0%}to{background-position:100% 100%}}
@@ -326,7 +338,7 @@
     });
   }
   function holoHTML(etiqueta, lamina) {
-    return `<div class="holo${lamina ? " lamina" : ""}"><canvas width="250" height="${lamina ? 380 : 444}" role="img" aria-label="${etiqueta}"></canvas><span class="holo__brillo"></span></div>`;
+    return `<div class="holo${lamina ? " lamina" : ""}"><canvas width="250" height="${lamina ? 373 : 444}" role="img" aria-label="${etiqueta}"></canvas><span class="holo__brillo"></span></div>`;
   }
   /* enlace de reto: abre la zona con marca de origen (así Meet2Go muestra lo que vende el reto) */
   function textoReto(d) {
@@ -338,10 +350,10 @@
   /* pantalla del premio dentro del resultado de cada juego */
   function montar(cont, d) {
     estilos();
-    const n = d.nivel, t = NIVELES[n], sig = NIVELES[n + 1], val = valorDe(d), u = UMBRALES[d.juego];
+    const n = d.nivel, t = NIVELES[n], sig = NIVELES[n + 1], u = UMBRALES[d.juego];
     const nota = !sig ? "¡Llegaste al nivel más alto! Ahora reta a tus panas."
       : d.juego === "ritmo" ? `Con ${u[n + 1]} % de precisión ganas «${sig.nombre}».`
-        : `Con ${P.fmt(u[n + 1])} puntos ganas «${sig.nombre}»: te faltaron ${P.fmt(u[n + 1] - val)}.`;
+        : `Con ${P.fmt(puntosPara(n + 1, d.max))} puntos en esta ronda ganabas «${sig.nombre}»: te faltaron ${P.fmt(Math.max(10, puntosPara(n + 1, d.max) - Math.round(d.puntos || 0)))}.`;
     const conVideo = !P.kiosco && !!tipoVideo();
     cont.innerHTML = `<p class="premio-ceja">Tu premio · nivel ${n + 1} de ${NIVELES.length}</p><h3 class="premio-nombre">${t.nombre}</h3>` +
       holoHTML(`Tu sticker holográfico «${t.nombre}»`) +
@@ -387,7 +399,7 @@
       est.textContent = "Preparando tu sticker…";
       prepImg().then((fi) => {
         // en el teléfono la hoja de compartir pide un toque reciente: si la imagen tardó, se pide un segundo toque
-        if (G.puede(fi)) { des.textContent = "Guardar imagen en mi teléfono"; est.textContent = "Tu imagen está lista: toca otra vez para guardarla o subirla a tus historias."; }
+        if (G.puede(fi)) { des.textContent = "Guardar o compartir la imagen"; est.textContent = "Tu imagen está lista: toca otra vez para guardarla o subirla a tus historias."; }
         else entregar(fi);
       }, () => { est.textContent = "No se pudo preparar el sticker. Inténtalo otra vez."; img = null; });
     });
@@ -398,12 +410,12 @@
       exportarVideo(d, (p) => { est.textContent = `Grabando tu video holográfico… ${Math.round(p * 100)} %`; }).then((r) => {
         grabando = false; vb.disabled = false;
         vid = new File([r.blob], nombre + "-holografico." + r.ext, { type: r.type });
-        if (G.puede(vid)) { ver(vid); vb.textContent = "Guardar video en mi teléfono"; est.textContent = "Tu video está listo: tócalo para guardarlo en Fotos o subirlo directo a tus historias."; }
+        if (G.puede(vid)) { ver(vid); vb.textContent = "Guardar o compartir el video"; est.textContent = "Tu video está listo: tócalo para guardarlo en Fotos o subirlo directo a tus historias."; }
         else entregar(vid);
       }, () => { grabando = false; vb.disabled = false; est.textContent = "Este navegador no pudo grabar el video. Usa «Imagen del sticker»."; });
     });
     return listoVista;
   }
 
-  window.PetsSticker = { NIVELES, UMBRALES, JUEGOS, PERROS, nivelDe, meta, valorDe, preparar, pintar, exportar, exportarVideo, tipoVideo, montar, moverHolo, holoHTML, estilos, textoReto };
+  window.PetsSticker = { NIVELES, UMBRALES, JUEGOS, PERROS, MAX_YAPA_TIPICO, nivelDe, meta, valorDe, puntosPara, preparar, pintar, exportar, exportarVideo, tipoVideo, montar, moverHolo, holoHTML, estilos, textoReto };
 })();
