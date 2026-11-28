@@ -708,3 +708,7 @@ details > p { margin: 0; padding: 0 0 var(--e5); max-width: 60ch; }
 .cartel__pie .firmas { width: 100%; max-width: 30rem; grid-column: 1 / -1; }
 .heroe__cartela .firmas { margin-bottom: var(--e3); }
 @media (max-width: 360px) { .firmas__marcas { flex-basis: 10rem; width: 10rem; } .firmas__logo--clapzy { --w: 80px; } .firmas__logo--pilsener { --w: 62px; } }
+/* cinco pestañas (concurso de bandas, 27-nov) */
+.paginas { min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.paginas::-webkit-scrollbar { display: none; }
+@media (max-width: 419px) { .paginas a { padding: 0 3px; font-size: .8125rem; } }

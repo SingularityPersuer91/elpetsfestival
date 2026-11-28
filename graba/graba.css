@@ -1,0 +1,201 @@
+/* Concurso de bandas Graba Estudio × El Pets Festival (HUECA-GRABA-002). Paleta y letras del festival; el cian de Graba solo como acento. */
+@font-face { font-family: "Bricolage"; src: url("../juegos/assets/fuentes/bricolage-var.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
+@font-face { font-family: "Figtree"; src: url("../juegos/assets/fuentes/figtree-var.woff2") format("woff2"); font-weight: 300 900; font-display: swap; }
+:root {
+  --canela: #B4472A; --mostaza: #F2B33D; --crema: #FFF4E0; --carbon: #231A15; --carbon-2: #2E231C; --carbon-3: #3B2D24;
+  --crema-70: rgba(255, 244, 224, .76); --graba: #049ED4; --radio: 22px; --ancho: 1080px;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body { margin: 0; background: var(--carbon); color: var(--crema); font: 400 17px/1.55 "Figtree", system-ui, sans-serif; }
+img { max-width: 100%; height: auto; display: block; }
+h1, h2, h3 { font-family: "Bricolage", "Figtree", sans-serif; line-height: 1.08; margin: 0 0 .5em; letter-spacing: -.01em; }
+h2 { font-size: clamp(1.7rem, 4.6vw, 2.5rem); }
+h3 { font-size: 1.2rem; }
+p { margin: 0 0 1em; }
+b { font-weight: 700; }
+a { color: inherit; }
+.enlace { color: var(--mostaza); text-underline-offset: 3px; }
+.saltar { position: absolute; left: -999px; top: 8px; background: var(--mostaza); color: var(--carbon); padding: 8px 14px; border-radius: 8px; z-index: 10; }
+.saltar:focus { left: 8px; }
+:focus-visible { outline: 3px solid var(--mostaza); outline-offset: 3px; }
+
+/* barra */
+.barra { position: sticky; top: 0; z-index: 5; background: rgba(35, 26, 21, .94); backdrop-filter: blur(8px); border-bottom: 1px solid var(--carbon-3); }
+.barra__in { max-width: var(--ancho); margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 12px; }
+.barra__marca { display: flex; align-items: center; gap: 8px; text-decoration: none; font: 700 1rem "Bricolage", sans-serif; flex: none; }
+.barra__marca img { width: 38px; height: auto; }
+.barra__marca span { display: none; }
+.paginas { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; flex: 1; min-width: 0; }
+.paginas::-webkit-scrollbar { display: none; }
+.paginas a { text-decoration: none; padding: 8px 10px; border-radius: 999px; font-size: .92rem; white-space: nowrap; color: var(--crema-70); }
+.paginas a[aria-current] { background: var(--crema); color: var(--carbon); font-weight: 700; }
+.paginas .largo { display: none; }
+.barra__cta { flex: none; text-decoration: none; background: var(--mostaza); color: var(--carbon); font-weight: 800; padding: 8px 14px; border-radius: 999px; font-size: .92rem; }
+@media (min-width: 900px) { .barra__marca span, .paginas .largo { display: inline; } .paginas .corto { display: none; } }
+@media (max-width: 899px) {
+  .barra__in { flex-wrap: wrap; row-gap: 6px; }
+  .barra__marca span { display: inline; }
+  .barra__cta { margin-left: auto; }
+  .paginas { order: 3; flex: 1 0 100%; justify-content: space-between; }
+  .paginas a { padding: 7px 8px; font-size: .88rem; }
+}
+@media (max-width: 359px) { .paginas a { padding: 7px 5px; font-size: .82rem; } }
+
+section { max-width: var(--ancho); margin: 0 auto; padding: 56px 16px; }
+.ceja { font: 800 .82rem "Figtree", sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--mostaza); }
+
+/* hero */
+.hero { max-width: none; padding: 0; background:
+  radial-gradient(60% 70% at 85% 10%, rgba(4, 158, 212, .26), transparent 70%),
+  radial-gradient(70% 60% at 0% 100%, rgba(180, 71, 42, .35), transparent 70%), var(--carbon); }
+.hero__in { max-width: var(--ancho); margin: 0 auto; padding: 48px 16px 56px; }
+.presenta { display: inline-flex; align-items: center; gap: 10px; background: var(--carbon-2); border: 1px solid var(--carbon-3); padding: 6px 14px 6px 6px; border-radius: 999px; margin-bottom: 22px; font-size: .95rem; }
+.presenta img { height: 30px; width: auto; border-radius: 6px; }
+.hero h1 { font-size: clamp(2.3rem, 8.2vw, 4.6rem); max-width: 15ch; }
+.hero h1 em { font-style: normal; color: var(--mostaza); }
+.bajada { font-size: clamp(1.05rem, 2.6vw, 1.3rem); color: var(--crema-70); max-width: 52ch; }
+.bajada b { color: var(--crema); }
+.hero__botones { display: flex; flex-wrap: wrap; gap: 12px; margin: 26px 0 22px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 12px 22px; border-radius: 999px; font-weight: 800; text-decoration: none; border: 2px solid transparent; }
+.btn--primario { background: var(--mostaza); color: var(--carbon); }
+.btn--fantasma { border-color: var(--crema-70); color: var(--crema); }
+.btn--grande { font-size: 1.1rem; min-height: 56px; padding: 14px 28px; }
+.cierre { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; font-size: .95rem; }
+.cierre__rot { color: var(--crema-70); }
+.cierre__cuenta { background: var(--graba); color: var(--carbon); font-weight: 800; padding: 4px 12px; border-radius: 999px; }
+
+/* premio */
+.premio__lista { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+.premio__lista li { display: flex; gap: 16px; align-items: flex-start; background: var(--carbon-2); border: 1px solid var(--carbon-3); border-radius: var(--radio); padding: 20px; }
+.premio__lista p { margin: 0; color: var(--crema-70); }
+.premio__n, .pasos__n { flex: none; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--mostaza); color: var(--carbon); font: 800 1.2rem "Bricolage", sans-serif; }
+@media (min-width: 760px) { .premio__lista { grid-template-columns: 1fr 1fr; } }
+
+/* participa */
+.participa { background: var(--crema); color: var(--carbon); max-width: none; }
+.participa > * { max-width: var(--ancho); margin-left: auto; margin-right: auto; }
+.pasos { list-style: none; padding: 0; display: grid; gap: 14px; margin-top: 8px; margin-bottom: 22px; }
+.pasos li { background: #fff; border-radius: var(--radio); padding: 20px; border: 1px solid #eadcc2; }
+.pasos li p { margin: 0; }
+.pasos h3 { margin-top: 12px; }
+@media (min-width: 760px) { .pasos { grid-template-columns: repeat(3, 1fr); } }
+.hashtag { margin-top: 0; margin-bottom: 0; }
+.hashtag__btn { font: 800 1.15rem "Bricolage", sans-serif; background: var(--carbon); color: var(--crema); border: 0; border-radius: 999px; padding: 12px 18px; cursor: pointer; min-height: 48px; }
+.hashtag__btn span { font: 700 .8rem "Figtree", sans-serif; margin-left: 10px; color: var(--mostaza); text-transform: uppercase; letter-spacing: .08em; }
+
+/* reels */
+.reels__nota { color: var(--crema-70); font-size: .95rem; }
+.reels__grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.reel { background: var(--carbon-2); border: 1px solid var(--carbon-3); border-radius: var(--radio); overflow: hidden; display: flex; flex-direction: column; }
+.reel__abrir { all: unset; cursor: pointer; display: grid; place-items: center; aspect-ratio: 9 / 12; background:
+  radial-gradient(80% 60% at 50% 40%, rgba(4, 158, 212, .35), transparent 70%), var(--carbon-3); position: relative; }
+.reel__abrir:focus-visible { outline: 3px solid var(--mostaza); outline-offset: -3px; }
+.reel__play { width: 72px; height: 72px; border-radius: 50%; background: var(--mostaza); display: grid; place-items: center; }
+.reel__play::before { content: ""; border-left: 22px solid var(--carbon); border-top: 14px solid transparent; border-bottom: 14px solid transparent; margin-left: 6px; }
+.reel__aviso { position: absolute; bottom: 12px; left: 12px; right: 12px; font-size: .8rem; color: var(--crema-70); text-align: center; }
+.reel__pie { padding: 14px 16px; }
+.reel__banda { font: 700 1.05rem "Bricolage", sans-serif; margin: 0; }
+
+.reel iframe, .reel .instagram-media { margin: 0 !important; min-width: 0 !important; width: 100% !important; }
+.reels__vacio { background: var(--carbon-2); border: 2px dashed var(--carbon-3); border-radius: var(--radio); padding: 32px 20px; text-align: center; }
+.reels__vacio-t { font: 800 1.6rem "Bricolage", sans-serif; color: var(--mostaza); margin-bottom: .3em; }
+.reels__vacio p:last-child { margin: 0; color: var(--crema-70); }
+
+/* elige */
+.elige__barras { display: flex; border-radius: 14px; overflow: hidden; margin: 6px 0 18px; font-weight: 800; font-size: .95rem; }
+.elige__barras span { flex: var(--v) 1 0; padding: 14px 12px; min-width: 0; }
+.elige__jurado { background: var(--graba); color: var(--carbon); }
+.elige__publico { background: var(--mostaza); color: var(--carbon); }
+.elige p { color: var(--crema-70); max-width: 64ch; }
+@media (max-width: 480px) { .elige__barras { flex-direction: column; } }
+
+/* bases */
+.bases details { background: var(--carbon-2); border: 1px solid var(--carbon-3); border-radius: var(--radio); padding: 4px 20px; }
+.bases summary { cursor: pointer; font-weight: 800; padding: 14px 0; min-height: 48px; }
+.bases ol { padding-left: 1.2em; margin: 0 0 16px; color: var(--crema-70); }
+.bases li { margin-bottom: .6em; }
+
+/* final */
+.final { text-align: center; }
+.final p { color: var(--crema-70); max-width: 52ch; margin-left: auto; margin-right: auto; }
+.firmas { display: flex; flex-wrap: wrap; justify-content: center; gap: 18px 28px; margin-top: 36px; background: var(--crema); border-radius: var(--radio); padding: 20px; }
+.firmas__grupo { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.firmas__rol { font: 800 .72rem "Figtree", sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--carbon-3); }
+.firmas img { height: 44px; width: auto; }
+.firmas__chip { background: var(--carbon); border-radius: 6px; padding: 8px 12px; display: block; }
+.firmas__chip img { height: 30px; }
+.firmas .firmas__graba { height: 46px; width: auto; border-radius: 6px; }
+.pie { text-align: center; padding: 24px 16px 40px; font-size: .92rem; color: var(--crema-70); border-top: 1px solid var(--carbon-3); }
+.pie p { margin: 0; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+/* portada en escritorio: tarjeta del concurso a la derecha */
+.hero__visual { display: none; }
+@media (min-width: 900px) {
+  .hero__in { display: grid; grid-template-columns: 1.35fr 1fr; gap: 40px; align-items: center; }
+  .hero__visual { display: grid; justify-items: center; gap: 18px; background: var(--carbon-2); border: 1px solid var(--carbon-3); border-radius: 28px; padding: 36px 28px; transform: rotate(2deg); box-shadow: 0 24px 60px rgba(0, 0, 0, .45); }
+  .hero__visual .v-logos { display: flex; align-items: center; gap: 18px; }
+  .hero__visual .v-graba { width: 230px; height: auto; border-radius: 12px; }
+  .hero__visual .v-x { font: 800 2rem "Bricolage", sans-serif; color: var(--crema-70); }
+  .hero__visual .v-fest { width: 120px; }
+  .hero__visual .v-t { font: 800 1.5rem/1.15 "Bricolage", sans-serif; text-align: center; margin: 0; }
+  .hero__visual .v-h { background: var(--mostaza); color: var(--carbon); font: 800 1.1rem "Bricolage", sans-serif; padding: 8px 18px; border-radius: 999px; }
+}
+
+/* votación pública y logos en pareja */
+.voto { background: var(--carbon-2); border: 1px solid var(--carbon-3); border-radius: var(--radio); padding: 20px; margin-bottom: 22px; }
+.voto__t { color: var(--mostaza); margin-bottom: 4px; }
+.voto__nota { color: var(--crema-70); font-size: .95rem; }
+.voto__lista { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.voto__fila { display: grid; grid-template-columns: 36px 1fr auto; align-items: center; gap: 10px; background: var(--carbon-3); border-radius: 12px; padding: 10px 12px; }
+.voto__pos { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: var(--graba); color: var(--carbon); font-weight: 800; }
+.voto__fila:first-child .voto__pos { background: var(--mostaza); color: var(--carbon); }
+.voto__banda { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.voto__n { font-weight: 800; white-space: nowrap; }
+.reel__pos { position: absolute; top: 12px; left: 12px; background: var(--mostaza); color: var(--carbon); font-weight: 800; border-radius: 999px; padding: 4px 10px; }
+.reel__datos { margin: 2px 0 10px; font-size: .88rem; color: var(--crema-70); }
+.reel__votar { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 16px; border-radius: 999px; background: var(--graba); color: var(--carbon); font-weight: 800; text-decoration: none; }
+.firmas__par { display: flex; align-items: center; gap: 14px; }
+
+/* seguimiento público y casillero de votación por video */
+.seguimiento { display: grid; gap: 14px; margin-bottom: 22px; }
+.resumen { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.resumen li { background: var(--carbon-2); border: 1px solid var(--carbon-3); border-radius: 16px; padding: 14px 12px; display: grid; gap: 2px; min-width: 0; }
+.resumen b { font: 800 clamp(1.4rem, 5vw, 2rem) "Bricolage", sans-serif; color: var(--mostaza); font-variant-numeric: tabular-nums; }
+.resumen span { font-size: .85rem; color: var(--crema-70); }
+.seguimiento__nota { color: var(--crema-70); font-size: .95rem; margin: 0; }
+.voto { margin-bottom: 0; }
+.voto__caja { padding: 14px 16px 16px; display: grid; gap: 8px; }
+.voto__caja .reel__banda { margin: 0; }
+.voto__cifras { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.voto__grande { margin: 0; font-size: 1rem; color: var(--crema-70); }
+.voto__grande b { font: 800 2rem/1 "Bricolage", sans-serif; color: var(--crema); font-variant-numeric: tabular-nums; }
+.voto__dia { margin: 0; font-size: .85rem; font-weight: 700; color: var(--graba); }
+.voto__linea { width: 100%; height: 44px; display: block; }
+.voto__area { fill: rgba(4, 158, 212, .18); }
+.voto__trazo { fill: none; stroke: var(--graba); stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
+.voto__punto { fill: var(--mostaza); }
+.voto__caja .reel__datos { margin: 0; }
+.voto__caja .reel__votar { justify-content: center; }
+.pasa { margin-top: 28px; background: var(--carbon-2); border: 1px solid var(--carbon-3); border-radius: var(--radio); padding: 20px; }
+.pasa__t { color: var(--mostaza); margin-bottom: 4px; }
+.pasa__lista { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 0; }
+.pasa__item { display: grid; grid-template-columns: 112px 1fr; gap: 12px; padding: 10px 0; border-top: 1px solid var(--carbon-3); align-items: baseline; }
+.pasa__hora { font-size: .82rem; color: var(--crema-70); font-variant-numeric: tabular-nums; }
+.pasa__txt { font-weight: 600; min-width: 0; }
+.pasa__item--hito .pasa__txt { color: var(--mostaza); }
+@media (max-width: 420px) { .pasa__item { grid-template-columns: 1fr; gap: 2px; } }
+.voto__como { margin: 0; font-size: .8rem; color: var(--crema-70); text-align: center; }
+
+.premio__extra { margin-top: 8px !important; font-size: .92rem; }
+.aviso-alcohol { margin: 12px auto 0; font-size: .82rem; color: var(--crema-70); }
+
+/* portada con la foto del concurso (escena generada en el Bicentenario, sin texto) */
+.hero { position: relative; overflow: hidden; }
+.hero__foto { position: absolute; inset: 0; z-index: 0; }
+.hero__foto img { width: 100%; height: 100%; object-fit: cover; object-position: 60% 40%; display: block; }
+.hero::after { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(35,26,21,.88) 0%, rgba(35,26,21,.72) 45%, rgba(35,26,21,.94) 100%); }
+.hero__in { position: relative; z-index: 2; }
+@media (min-width: 900px) { .hero::after { background: linear-gradient(90deg, rgba(35,26,21,.95) 0%, rgba(35,26,21,.82) 45%, rgba(35,26,21,.35) 75%, rgba(35,26,21,.55) 100%); } .hero__foto img { object-position: 70% 50%; } }
+@media (min-width: 900px) { .hero__visual { display: none !important; } .hero__in { display: block; padding-block: 72px 80px; } .hero__texto { max-width: 640px; } }
